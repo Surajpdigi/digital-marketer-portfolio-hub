@@ -30,9 +30,9 @@ const Portfolio = () => {
   }));
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="pt-24 pb-16">
+      <main className="flex-grow pt-24 pb-16 max-w-7xl mx-auto w-full">
         <AboutSection />
         <ProjectsSection 
           isLoading={isLoading}
@@ -41,7 +41,7 @@ const Portfolio = () => {
         />
       </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

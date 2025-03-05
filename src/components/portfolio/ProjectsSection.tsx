@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { ProjectCard, isVideoProject } from "./ProjectCard";
 import { VideoModal } from "./VideoModal";
+import { PostModal } from "./PostModal";
 import { VideoProject, PostProject, Project } from "./ProjectTypes";
 
 type ProjectsSectionProps = {
@@ -15,6 +16,7 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   const [filter, setFilter] = useState("all");
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
+  const [activePost, setActivePost] = useState<number | null>(null);
 
   // Filter out projects without essential data
   const validVideoProjects = videoProjects.filter(video => 
@@ -43,9 +45,17 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
     setActiveVideoIsShort(isShort);
   };
 
+  const handlePostClick = (postId: number) => {
+    setActivePost(postId);
+  };
+
   const closeVideoModal = () => {
     setActiveVideo(null);
     setActiveVideoIsShort(false);
+  };
+
+  const closePostModal = () => {
+    setActivePost(null);
   };
 
   return (
@@ -76,6 +86,8 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
               onClick={() => {
                 if (isVideoProject(project)) {
                   handleVideoClick(project.id.toString(), project.isShort);
+                } else {
+                  handlePostClick(Number(project.id));
                 }
               }}
             />
@@ -89,6 +101,14 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
           isShort={activeVideoIsShort}
           onClose={closeVideoModal}
           videoProjects={uniqueVideoProjects}
+        />
+      )}
+
+      {activePost !== null && (
+        <PostModal
+          postId={activePost}
+          onClose={closePostModal}
+          postProjects={validPostProjects}
         />
       )}
     </section>
