@@ -14,6 +14,7 @@ export type VideoProject = {
   thumbnail: string;
   category: string;
   isShort: boolean;
+  url?: string; // Add the url property
 };
 
 export type Project = PostProject | VideoProject;

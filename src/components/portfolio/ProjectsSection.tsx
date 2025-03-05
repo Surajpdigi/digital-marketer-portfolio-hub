@@ -20,10 +20,19 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   const validVideoProjects = videoProjects.filter(video => 
     video.title && video.description && video.thumbnail);
   
+  // Remove duplicates from videos by unique ID
+  const uniqueVideoProjects = validVideoProjects.reduce((acc: VideoProject[], current) => {
+    const existingIndex = acc.findIndex(v => v.id === current.id);
+    if (existingIndex === -1) {
+      acc.push(current);
+    }
+    return acc;
+  }, []);
+  
   const validPostProjects = postProjects.filter(post => 
     post.title && post.description && post.image);
   
-  const allProjects: Project[] = [...validPostProjects, ...validVideoProjects];
+  const allProjects: Project[] = [...validPostProjects, ...uniqueVideoProjects];
   
   const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
@@ -62,7 +71,7 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
             <ProjectCard 
-              key={`${project.category}-${project.id.toString()}`} 
+              key={`${project.category}-${project.id}`} 
               project={project}
               onClick={() => {
                 if (isVideoProject(project)) {
@@ -79,7 +88,7 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
           videoId={activeVideo}
           isShort={activeVideoIsShort}
           onClose={closeVideoModal}
-          videoProjects={videoProjects}
+          videoProjects={uniqueVideoProjects}
         />
       )}
     </section>

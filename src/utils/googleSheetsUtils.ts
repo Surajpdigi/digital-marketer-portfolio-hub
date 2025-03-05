@@ -9,59 +9,98 @@ import { VideoContent, PostContent } from "@/context/ContentContext";
 export async function fetchGoogleSheet(sheetURL: string) {
   try {
     const response = await fetch(sheetURL);
-    const text = await response.text();
-    const rows = text.split("\n").map(row => {
-      // Handle quoted CSV values that might contain commas
-      const values: string[] = [];
-      let inQuote = false;
-      let currentValue = "";
-      
-      for (let i = 0; i < row.length; i++) {
-        const char = row[i];
-        
-        if (char === '"' && (i === 0 || row[i-1] !== '\\')) {
-          inQuote = !inQuote;
-        } else if (char === ',' && !inQuote) {
-          values.push(currentValue.trim());
-          currentValue = "";
-        } else {
-          currentValue += char;
-        }
-      }
-      
-      // Add the last value
-      values.push(currentValue.trim());
-      return values;
-    });
-    
-    // Skip empty rows at the beginning
-    let startIndex = 0;
-    while (startIndex < rows.length && rows[startIndex].every(cell => !cell.trim())) {
-      startIndex++;
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
     }
     
-    // If we found an empty spreadsheet, return empty array
-    if (startIndex >= rows.length) {
+    const text = await response.text();
+    console.log("Raw CSV data:", text); // Log the raw data for debugging
+    
+    // Handle empty rows at the start
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) {
+      console.warn("No data in sheet or empty response");
       return [];
     }
     
-    const headers = rows[startIndex].map(header => header.trim()); // Get column names
-    return rows.slice(startIndex + 1).filter(row => row.some(cell => cell.trim())).map(row => {
-      let obj: Record<string, string> = {};
-      headers.forEach((header, i) => {
-        // Clean up values (remove quotes)
-        let value = row[i] ? row[i].trim() : "";
-        if (value.startsWith('"') && value.endsWith('"')) {
-          value = value.substring(1, value.length - 1);
+    // Find the actual header row (ignore empty or metadata rows)
+    let headerRowIndex = 0;
+    while (headerRowIndex < lines.length) {
+      const line = lines[headerRowIndex];
+      // Check if this line contains expected column headers
+      if (line.includes('id') && (line.includes('title') || line.includes('description'))) {
+        break;
+      }
+      headerRowIndex++;
+    }
+    
+    if (headerRowIndex >= lines.length) {
+      console.warn("Could not find header row in sheet");
+      return [];
+    }
+    
+    // Parse headers
+    const headerLine = lines[headerRowIndex];
+    const headers = parseCSVLine(headerLine);
+    
+    // Parse data rows
+    const result = [];
+    for (let i = headerRowIndex + 1; i < lines.length; i++) {
+      if (lines[i].trim() === '') continue;
+      
+      const values = parseCSVLine(lines[i]);
+      if (values.length === 0) continue;
+      
+      const obj: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        if (header && header.trim()) {
+          obj[header.trim()] = index < values.length ? values[index] : '';
         }
-        obj[header] = value;
       });
-      return obj;
-    });
+      
+      // Only add rows that have at least an id and title
+      if (obj.id && obj.title) {
+        result.push(obj);
+      }
+    }
+    
+    console.log("Parsed sheet data:", result);
+    return result;
   } catch (error) {
     console.error("Error fetching Google Sheets:", error);
     return [];
   }
+}
+
+// Parse a CSV line handling quoted values
+function parseCSVLine(line: string): string[] {
+  const values: string[] = [];
+  let currentValue = '';
+  let insideQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    
+    if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
+      insideQuotes = !insideQuotes;
+    } else if (char === ',' && !insideQuotes) {
+      values.push(currentValue.trim());
+      currentValue = '';
+    } else {
+      currentValue += char;
+    }
+  }
+  
+  // Add the last value
+  values.push(currentValue.trim());
+  
+  // Clean up values (remove surrounding quotes)
+  return values.map(value => {
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return value.substring(1, value.length - 1);
+    }
+    return value;
+  });
 }
 
 // Function to convert raw data to VideoContent objects

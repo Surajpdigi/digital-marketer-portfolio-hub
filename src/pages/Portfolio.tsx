@@ -25,7 +25,8 @@ const Portfolio = () => {
     description: video.description,
     thumbnail: video.thumbnail,
     category: "video",
-    isShort: video.isShort || false
+    isShort: video.isShort || false,
+    url: video.url // Add the URL from context
   }));
 
   return (

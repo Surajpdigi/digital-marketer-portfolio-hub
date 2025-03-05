@@ -15,10 +15,28 @@ type VideoModalProps = {
 const extractYouTubeId = (url: string): string => {
   if (!url) return '';
   
+  // Check if it's already just an ID
+  if (url.length === 11 || url.indexOf('/') === -1) {
+    return url;
+  }
+  
+  // Handle various YouTube URL formats
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   
-  return (match && match[2].length === 11) ? match[2] : url;
+  // Also handle YouTube shorts and other formats
+  if (match && match[2].length === 11) {
+    return match[2];
+  }
+  
+  // For "v=" format without full URL
+  if (url.startsWith('v=')) {
+    const id = url.substring(2).split('&')[0];
+    return id;
+  }
+  
+  // Just return whatever we have as a fallback
+  return url;
 };
 
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
@@ -40,6 +58,9 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
 
   const currentVideo = videoProjects.find(v => v.id === videoId);
   const youtubeId = currentVideo?.url ? extractYouTubeId(currentVideo.url) : videoId;
+
+  console.log("Current video:", currentVideo);
+  console.log("YouTube ID:", youtubeId);
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">

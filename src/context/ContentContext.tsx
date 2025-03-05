@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchVideos, fetchPosts } from '@/utils/googleSheetsUtils';
 
@@ -44,6 +45,9 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
       const fetchedVideos = await fetchVideos();
       const fetchedPosts = await fetchPosts();
       
+      console.log("Fetched videos:", fetchedVideos);
+      console.log("Fetched posts:", fetchedPosts);
+      
       setVideos(fetchedVideos);
       setPosts(fetchedPosts);
       
@@ -62,18 +66,29 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   useEffect(() => {
-    const savedVideos = localStorage.getItem('dashboardVideos');
-    const savedPosts = localStorage.getItem('dashboardPosts');
-
-    if (savedVideos && savedPosts) {
-      setVideos(JSON.parse(savedVideos));
-      setPosts(JSON.parse(savedPosts));
-      setIsLoading(false);
+    const loadContent = async () => {
+      setIsLoading(true);
       
-      refreshContent();
-    } else {
-      refreshContent();
-    }
+      try {
+        // First try to load from localStorage for faster initial render
+        const savedVideos = localStorage.getItem('dashboardVideos');
+        const savedPosts = localStorage.getItem('dashboardPosts');
+  
+        if (savedVideos && savedPosts) {
+          setVideos(JSON.parse(savedVideos));
+          setPosts(JSON.parse(savedPosts));
+        }
+        
+        // Then refresh from Google Sheets
+        await refreshContent();
+      } catch (error) {
+        console.error("Error loading content:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadContent();
   }, []);
 
   const addVideo = (video: VideoContent) => {
