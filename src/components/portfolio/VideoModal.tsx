@@ -11,6 +11,16 @@ type VideoModalProps = {
   videoProjects: VideoProject[];
 };
 
+// Helper function to extract YouTube video ID from URL
+const extractYouTubeId = (url: string): string => {
+  if (!url) return '';
+  
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  
+  return (match && match[2].length === 11) ? match[2] : url;
+};
+
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +39,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
   }, [onClose]);
 
   const currentVideo = videoProjects.find(v => v.id === videoId);
+  const youtubeId = currentVideo?.url ? extractYouTubeId(currentVideo.url) : videoId;
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -46,7 +57,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
         </Button>
         <div className={isShort ? 'aspect-[9/16] w-full' : 'aspect-video w-full'}>
           <iframe 
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
             title="YouTube video player"
             className="w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

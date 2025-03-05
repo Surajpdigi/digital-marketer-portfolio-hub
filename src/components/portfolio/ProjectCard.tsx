@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Play } from "lucide-react";
 import { Project, VideoProject, PostProject } from "./ProjectTypes";
@@ -12,14 +13,31 @@ export const isVideoProject = (project: Project): project is VideoProject => {
 };
 
 export const getImageSource = (project: Project): string => {
+  let imageUrl = '';
+  
   if (project.category === "video") {
-    return (project as VideoProject).thumbnail || '';
+    imageUrl = (project as VideoProject).thumbnail || '';
   } else {
-    return (project as PostProject).image || '';
+    imageUrl = (project as PostProject).image || '';
   }
+  
+  // Check if the URL is from placeholder service and the image exists
+  if (imageUrl.includes('via.placeholder.com') || !imageUrl) {
+    return isVideoProject(project) 
+      ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" 
+      : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+  }
+  
+  return imageUrl;
 };
 
 export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
+  const [imageError, setImageError] = React.useState(false);
+  
+  const fallbackImage = isVideoProject(project)
+    ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+    : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+    
   return (
     <div 
       className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md"
@@ -27,12 +45,12 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
     >
       <div className="aspect-video">
         <img 
-          src={getImageSource(project)}
+          src={imageError ? fallbackImage : getImageSource(project)}
           alt={project.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "https://via.placeholder.com/320x180?text=Image+Not+Found";
+            console.log(`Image failed to load: ${getImageSource(project)}`);
+            setImageError(true);
           }}
         />
         {isVideoProject(project) && (

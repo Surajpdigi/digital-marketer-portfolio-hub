@@ -16,7 +16,14 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
 
-  const allProjects: Project[] = [...postProjects, ...videoProjects];
+  // Filter out projects without essential data
+  const validVideoProjects = videoProjects.filter(video => 
+    video.title && video.description && video.thumbnail);
+  
+  const validPostProjects = postProjects.filter(post => 
+    post.title && post.description && post.image);
+  
+  const allProjects: Project[] = [...validPostProjects, ...validVideoProjects];
   
   const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
@@ -48,14 +55,14 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
 
         {!isLoading && filteredProjects.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground">No projects found. Add projects through the dashboard.</p>
+            <p className="text-muted-foreground">No projects found. Add projects through the dashboard or update the Google Sheet.</p>
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => (
             <ProjectCard 
-              key={project.id.toString()} 
+              key={`${project.category}-${project.id.toString()}`} 
               project={project}
               onClick={() => {
                 if (isVideoProject(project)) {

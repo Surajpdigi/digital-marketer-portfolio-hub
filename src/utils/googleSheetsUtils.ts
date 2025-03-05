@@ -34,8 +34,19 @@ export async function fetchGoogleSheet(sheetURL: string) {
       return values;
     });
     
-    const headers = rows[0].map(header => header.trim()); // Get column names
-    return rows.slice(1).map(row => {
+    // Skip empty rows at the beginning
+    let startIndex = 0;
+    while (startIndex < rows.length && rows[startIndex].every(cell => !cell.trim())) {
+      startIndex++;
+    }
+    
+    // If we found an empty spreadsheet, return empty array
+    if (startIndex >= rows.length) {
+      return [];
+    }
+    
+    const headers = rows[startIndex].map(header => header.trim()); // Get column names
+    return rows.slice(startIndex + 1).filter(row => row.some(cell => cell.trim())).map(row => {
       let obj: Record<string, string> = {};
       headers.forEach((header, i) => {
         // Clean up values (remove quotes)
@@ -61,7 +72,7 @@ export async function fetchVideos(): Promise<VideoContent[]> {
     title: item.title || "Untitled Video",
     description: item.description || "",
     url: item.url || "",
-    thumbnail: item.thumbnail || "https://via.placeholder.com/320x180?text=Video",
+    thumbnail: item.thumbnail || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     isShort: item.isShort === "true" || item.isShort === "TRUE" || false
   }));
 }
@@ -73,6 +84,6 @@ export async function fetchPosts(): Promise<PostContent[]> {
     id: parseInt(item.id) || index + 1,
     title: item.title || "Untitled Post",
     description: item.description || "",
-    image: item.image || "https://via.placeholder.com/320x180?text=Post"
+    image: item.image || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
   }));
 }
