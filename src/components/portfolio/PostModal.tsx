@@ -43,7 +43,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         >
           <X className="h-5 w-5" />
         </Button>
-        <div className="max-h-[70vh] overflow-y-auto">
+        <div>
           <div className="aspect-video w-full">
             <img 
               src={currentPost?.image || ""}
