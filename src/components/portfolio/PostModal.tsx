@@ -33,7 +33,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden w-full max-w-2xl"
+        className="relative bg-white rounded-lg max-w-2xl max-h-[90vh] flex flex-col"
       >
         <Button 
           variant="ghost" 
@@ -43,12 +43,12 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         >
           <X className="h-5 w-5" />
         </Button>
-        <div>
-          <div className="w-full">
+        <div className="flex flex-col w-full">
+          <div className="relative w-full">
             <img 
               src={currentPost?.image || ""}
               alt={currentPost?.title || "Post"}
-              className="w-full object-contain"
+              className="w-full h-auto object-contain max-h-[60vh]"
             />
           </div>
           <div className="p-6 bg-white">
