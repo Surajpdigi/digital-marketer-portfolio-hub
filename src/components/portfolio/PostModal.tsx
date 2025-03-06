@@ -44,11 +44,11 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
         <div>
-          <div className="aspect-video w-full">
+          <div className="w-full">
             <img 
               src={currentPost?.image || ""}
               alt={currentPost?.title || "Post"}
-              className="w-full h-full object-cover"
+              className="w-full object-contain"
             />
           </div>
           <div className="p-6 bg-white">

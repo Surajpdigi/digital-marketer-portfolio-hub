@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { fetchVideos, fetchPosts } from '@/utils/googleSheetsUtils';
+import { fetchVideos, fetchPosts, fetchBlogPosts } from '@/utils/googleSheetsUtils';
 
 export type VideoContent = {
   id: string;
@@ -18,12 +18,24 @@ export type PostContent = {
   image: string;
 };
 
+export type BlogPostContent = {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  date: string;
+  readTime: string;
+  content: string;
+};
+
 export const defaultVideos: VideoContent[] = [];
 export const defaultPosts: PostContent[] = [];
+export const defaultBlogPosts: BlogPostContent[] = [];
 
 type ContentContextType = {
   videos: VideoContent[];
   posts: PostContent[];
+  blogPosts: BlogPostContent[];
   addVideo: (video: VideoContent) => void;
   addPost: (post: PostContent) => void;
   removeVideo: (id: string) => void;
@@ -37,6 +49,7 @@ const ContentContext = createContext<ContentContextType | undefined>(undefined);
 export const ContentProvider = ({ children }: { children: React.ReactNode }) => {
   const [videos, setVideos] = useState<VideoContent[]>([]);
   const [posts, setPosts] = useState<PostContent[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPostContent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshContent = async () => {
@@ -44,19 +57,24 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
     try {
       const fetchedVideos = await fetchVideos();
       const fetchedPosts = await fetchPosts();
+      const fetchedBlogPosts = await fetchBlogPosts();
       
       console.log("Fetched videos:", fetchedVideos);
       console.log("Fetched posts:", fetchedPosts);
+      console.log("Fetched blog posts:", fetchedBlogPosts);
       
       setVideos(fetchedVideos);
       setPosts(fetchedPosts);
+      setBlogPosts(fetchedBlogPosts);
       
       localStorage.setItem('dashboardVideos', JSON.stringify(fetchedVideos));
       localStorage.setItem('dashboardPosts', JSON.stringify(fetchedPosts));
+      localStorage.setItem('dashboardBlogPosts', JSON.stringify(fetchedBlogPosts));
       
       console.log("Content refreshed from Google Sheets", {
         videos: fetchedVideos.length,
-        posts: fetchedPosts.length
+        posts: fetchedPosts.length,
+        blogPosts: fetchedBlogPosts.length
       });
     } catch (error) {
       console.error("Failed to refresh content:", error);
@@ -73,10 +91,14 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
         // First try to load from localStorage for faster initial render
         const savedVideos = localStorage.getItem('dashboardVideos');
         const savedPosts = localStorage.getItem('dashboardPosts');
+        const savedBlogPosts = localStorage.getItem('dashboardBlogPosts');
   
         if (savedVideos && savedPosts) {
           setVideos(JSON.parse(savedVideos));
           setPosts(JSON.parse(savedPosts));
+          if (savedBlogPosts) {
+            setBlogPosts(JSON.parse(savedBlogPosts));
+          }
         }
         
         // Then refresh from Google Sheets
@@ -120,6 +142,7 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
       value={{ 
         videos, 
         posts, 
+        blogPosts,
         addVideo, 
         addPost, 
         removeVideo, 

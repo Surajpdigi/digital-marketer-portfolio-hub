@@ -1,9 +1,9 @@
-
 // Google Sheets URLs for our content
 const VIDEOS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=0&single=true&output=csv";
 const POSTS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=1156220402&single=true&output=csv";
+const BLOG_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=1990156849&single=true&output=csv";
 
-import { VideoContent, PostContent } from "@/context/ContentContext";
+import { VideoContent, PostContent, BlogPostContent } from "@/context/ContentContext";
 
 // Fetch data from Google Sheets CSV
 export async function fetchGoogleSheet(sheetURL: string) {
@@ -124,5 +124,19 @@ export async function fetchPosts(): Promise<PostContent[]> {
     title: item.title || "Untitled Post",
     description: item.description || "",
     image: item.image || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+  }));
+}
+
+// Function to convert raw data to BlogPostContent objects
+export async function fetchBlogPosts(): Promise<BlogPostContent[]> {
+  const data = await fetchGoogleSheet(BLOG_SHEET_URL);
+  return data.map((item: any, index) => ({
+    id: item.id || `blog-${index + 1}`,
+    title: item.title || "Untitled Blog Post",
+    description: item.description || "",
+    image: item.image || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    date: item.date || new Date().toLocaleDateString(),
+    readTime: item.readTime || "5 min read",
+    content: item.content || "No content available"
   }));
 }

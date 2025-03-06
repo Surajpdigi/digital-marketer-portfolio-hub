@@ -2,35 +2,12 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
-
-const blogPosts = [
-  {
-    id: "future-web-dev",
-    title: "The Future of Web Development",
-    description: "Exploring the latest trends and technologies shaping the future of web development.",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=800",
-    date: "March 15, 2024",
-    readTime: "5 min read"
-  },
-  {
-    id: "modern-ui-design",
-    title: "Mastering Modern UI Design",
-    description: "Essential principles and practices for creating stunning user interfaces.",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
-    date: "March 10, 2024",
-    readTime: "4 min read"
-  },
-  {
-    id: "scalable-applications",
-    title: "Building Scalable Applications",
-    description: "Best practices for creating applications that can grow with your business.",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&q=80&w=800",
-    date: "March 5, 2024",
-    readTime: "6 min read"
-  }
-];
+import { useContent } from "@/context/ContentContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Blog = () => {
+  const { blogPosts, isLoading } = useContent();
+
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-background to-muted/30" id="blog">
       <div className="max-w-6xl mx-auto reveal">
@@ -40,35 +17,63 @@ export const Blog = () => {
             Stay updated with our latest insights, tutorials, and industry news.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
-            <Link to={`/blog/${post.id}`} key={post.id} className="group">
-              <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border border-border/50 hover:border-primary/20">
+        
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((item) => (
+              <Card key={item} className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full">
                 <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-                  />
+                  <Skeleton className="h-full w-full" />
                 </div>
                 <CardHeader>
-                  <div className="flex justify-between items-center text-sm text-muted-foreground mb-2">
-                    <span>{post.date}</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                  <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">{post.title}</CardTitle>
-                  <CardDescription className="line-clamp-3">{post.description}</CardDescription>
+                  <Skeleton className="h-4 w-32 mb-2" />
+                  <Skeleton className="h-6 w-full mb-2" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4 mt-2" />
                 </CardHeader>
                 <CardContent>
-                  <span className="text-primary group-hover:underline inline-flex items-center">
-                    Read More
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </span>
+                  <Skeleton className="h-4 w-24" />
                 </CardContent>
               </Card>
-            </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogPosts.length > 0 ? (
+              blogPosts.map((post) => (
+                <Link to={`/blog/${post.id}`} key={post.id} className="group">
+                  <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full border border-border/50 hover:border-primary/20">
+                    <div className="aspect-video relative overflow-hidden">
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                    <CardHeader>
+                      <div className="flex justify-between items-center text-sm text-muted-foreground mb-2">
+                        <span>{post.date}</span>
+                        <span>{post.readTime}</span>
+                      </div>
+                      <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">{post.title}</CardTitle>
+                      <CardDescription className="line-clamp-3">{post.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <span className="text-primary group-hover:underline inline-flex items-center">
+                        Read More
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">No blog posts available. Please add some through the dashboard.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
