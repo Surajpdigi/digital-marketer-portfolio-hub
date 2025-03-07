@@ -51,19 +51,21 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
         
-        <div className="flex flex-col md:flex-row">
-          <div className="bg-gray-100 w-full md:w-1/2 flex items-center justify-center">
+        <div className="flex flex-col">
+          <div className={`bg-gray-100 w-full flex items-center justify-center ${isPortrait ? 'h-[600px]' : 'h-[400px]'}`}>
             {currentPost?.image && (
               <img 
                 src={currentPost.image}
                 alt={currentPost.title || "Post"}
-                className="w-full h-auto object-contain max-h-[70vh]"
+                className={`${isPortrait 
+                  ? 'h-[600px] w-auto object-cover' 
+                  : 'h-[400px] w-full object-cover'}`}
                 onLoad={handleImageLoad}
               />
             )}
           </div>
           
-          <div className="p-6 bg-white md:w-1/2">
+          <div className="p-6 bg-white">
             <h3 className="text-xl font-bold mb-4">
               {currentPost?.title || "Marketing Post"}
             </h3>
