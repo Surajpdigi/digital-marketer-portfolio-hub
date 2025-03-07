@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { PostProject } from "./ProjectTypes";
@@ -12,6 +12,8 @@ type PostModalProps = {
 
 export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const currentPost = postProjects.find(p => p.id === postId);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,13 +29,15 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     };
   }, [onClose]);
 
-  const currentPost = postProjects.find(p => p.id === postId);
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    setImageLoaded(true);
+  };
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden w-full max-w-2xl"
+        className="relative bg-white rounded-lg overflow-hidden w-full max-w-3xl flex flex-col"
       >
         <Button 
           variant="ghost" 
@@ -43,14 +47,19 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         >
           <X className="h-5 w-5" />
         </Button>
-        <div>
-          <div className="w-full">
-            <img 
-              src={currentPost?.image || ""}
-              alt={currentPost?.title || "Post"}
-              className="w-full object-contain"
-            />
+        
+        <div className="flex flex-col">
+          <div className="bg-gray-100 w-full flex items-center justify-center h-[400px]">
+            {currentPost?.image && (
+              <img 
+                src={currentPost.image}
+                alt={currentPost.title || "Post"}
+                className="max-h-[400px] max-w-full object-contain"
+                onLoad={handleImageLoad}
+              />
+            )}
           </div>
+          
           <div className="p-6 bg-white">
             <h3 className="text-xl font-bold mb-4">
               {currentPost?.title || "Marketing Post"}
