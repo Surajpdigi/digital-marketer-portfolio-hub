@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { PostProject } from "./ProjectTypes";
@@ -12,6 +12,8 @@ type PostModalProps = {
 
 export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -29,11 +31,17 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
 
   const currentPost = postProjects.find(p => p.id === postId);
 
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setIsPortrait(img.naturalHeight > img.naturalWidth);
+    setImageLoaded(true);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg max-w-2xl max-h-[90vh] flex flex-col"
+        className="relative bg-white rounded-lg w-full max-w-3xl flex flex-col"
       >
         <Button 
           variant="ghost" 
@@ -44,11 +52,16 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
         <div className="flex flex-col w-full">
-          <div className="relative w-full">
+          <div className={`relative w-full ${isPortrait ? 'h-[70vh]' : 'h-[50vh]'} overflow-hidden`}>
             <img 
               src={currentPost?.image || ""}
               alt={currentPost?.title || "Post"}
-              className="w-full h-auto object-contain max-h-[60vh]"
+              className={`w-full h-full ${isPortrait ? 'object-contain' : 'object-cover'}`}
+              onLoad={handleImageLoad}
+              style={{ 
+                opacity: imageLoaded ? 1 : 0,
+                transition: "opacity 0.3s ease"
+              }}
             />
           </div>
           <div className="p-6 bg-white">
