@@ -26,6 +26,17 @@ const PostForm = () => {
       return;
     }
 
+    // Process Google Drive URL if needed
+    let processedImageUrl = image;
+    if (image.includes('drive.google.com/file/d/')) {
+      // Extract file ID and convert to direct image URL
+      const fileIdMatch = image.match(/\/d\/(.+?)\/|\/d\/(.+?)$/);
+      if (fileIdMatch) {
+        const fileId = fileIdMatch[1] || fileIdMatch[2];
+        processedImageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+      }
+    }
+
     // Create a new unique ID
     const newId = Date.now();
 
@@ -33,7 +44,7 @@ const PostForm = () => {
       id: newId,
       title,
       description,
-      image,
+      image: processedImageUrl,
     };
 
     addPost(newPost);
@@ -82,9 +93,14 @@ const PostForm = () => {
             onChange={(e) => setImage(e.target.value)}
             placeholder="https://example.com/image.jpg"
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            For Google Drive images, use: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID
-          </p>
+          <div className="text-sm text-muted-foreground mt-1 space-y-1">
+            <p>Accepted formats:</p>
+            <ul className="list-disc pl-5">
+              <li>Direct image URLs (https://example.com/image.jpg)</li>
+              <li>Google Drive share links (will be automatically converted)</li>
+              <li>Google Drive format: https://drive.google.com/uc?export=view&id=YOUR_FILE_ID</li>
+            </ul>
+          </div>
         </div>
         
         <Button type="submit">Add Post</Button>

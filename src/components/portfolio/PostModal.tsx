@@ -16,6 +16,22 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
+  // Process Google Drive URLs if needed
+  const processImageUrl = (url: string) => {
+    // Check if it's a Google Drive link that needs conversion
+    if (url && url.includes('drive.google.com/file/d/')) {
+      // Extract file ID and convert to direct image URL
+      const fileIdMatch = url.match(/\/d\/(.+?)\/|\/d\/(.+?)$/);
+      if (fileIdMatch) {
+        const fileId = fileIdMatch[1] || fileIdMatch[2];
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      }
+    }
+    return url;
+  };
+
+  const imageUrl = currentPost?.image ? processImageUrl(currentPost.image) : '';
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -52,14 +68,12 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </Button>
         
         <div className="flex flex-col">
-          <div className={`bg-gray-100 w-full flex items-center justify-center ${isPortrait ? 'h-[600px]' : 'h-[400px]'}`}>
+          <div className="bg-gray-100 w-full flex items-center justify-center h-[400px]">
             {currentPost?.image && (
               <img 
-                src={currentPost.image}
+                src={imageUrl}
                 alt={currentPost.title || "Post"}
-                className={`${isPortrait 
-                  ? 'h-[600px] w-auto object-cover' 
-                  : 'h-[400px] w-full object-cover'}`}
+                className="max-h-[400px] max-w-full object-contain"
                 onLoad={handleImageLoad}
               />
             )}

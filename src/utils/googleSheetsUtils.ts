@@ -1,9 +1,32 @@
+
 // Google Sheets URLs for our content
 const VIDEOS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=0&single=true&output=csv";
 const POSTS_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=1156220402&single=true&output=csv";
 const BLOG_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=1990156849&single=true&output=csv";
 
 import { VideoContent, PostContent, BlogPostContent } from "@/context/ContentContext";
+
+// Helper function to process Google Drive image URLs
+function processGoogleDriveUrl(url: string): string {
+  if (!url) return url;
+  
+  // Check if it's already in the correct format
+  if (url.includes('drive.google.com/uc?export=view&id=')) {
+    return url;
+  }
+  
+  // Check if it's a Google Drive link that needs conversion
+  if (url.includes('drive.google.com/file/d/')) {
+    // Extract file ID and convert to direct image URL
+    const fileIdMatch = url.match(/\/d\/(.+?)\/|\/d\/(.+?)$/);
+    if (fileIdMatch) {
+      const fileId = fileIdMatch[1] || fileIdMatch[2];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+  }
+  
+  return url;
+}
 
 // Fetch data from Google Sheets CSV
 export async function fetchGoogleSheet(sheetURL: string) {
@@ -111,7 +134,7 @@ export async function fetchVideos(): Promise<VideoContent[]> {
     title: item.title || "Untitled Video",
     description: item.description || "",
     url: item.url || "",
-    thumbnail: item.thumbnail || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    thumbnail: processGoogleDriveUrl(item.thumbnail) || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     isShort: item.isShort === "true" || item.isShort === "TRUE" || false
   }));
 }
@@ -123,7 +146,7 @@ export async function fetchPosts(): Promise<PostContent[]> {
     id: parseInt(item.id) || index + 1,
     title: item.title || "Untitled Post",
     description: item.description || "",
-    image: item.image || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+    image: processGoogleDriveUrl(item.image) || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
   }));
 }
 
@@ -134,7 +157,7 @@ export async function fetchBlogPosts(): Promise<BlogPostContent[]> {
     id: item.id || `blog-${index + 1}`,
     title: item.title || "Untitled Blog Post",
     description: item.description || "",
-    image: item.image || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+    image: processGoogleDriveUrl(item.image) || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
     date: item.date || new Date().toLocaleDateString(),
     readTime: item.readTime || "5 min read",
     content: item.content || "No content available"
