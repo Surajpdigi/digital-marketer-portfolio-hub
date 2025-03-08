@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -16,18 +15,10 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
-  // Process Google Drive URLs if needed
+  // Function to process Google Drive links
   const processImageUrl = (url: string) => {
-    // Check if it's a Google Drive link that needs conversion
-    if (url && url.includes('drive.google.com/file/d/')) {
-      // Extract file ID and convert to direct image URL
-      const fileIdMatch = url.match(/\/d\/(.+?)\/|\/d\/(.+?)$/);
-      if (fileIdMatch) {
-        const fileId = fileIdMatch[1] || fileIdMatch[2];
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
-      }
-    }
-    return url;
+    const match = url.match(/\/d\/([^/]+)/);
+    return match ? `https://drive.google.com/uc?id=${match[1]}` : url;
   };
 
   const imageUrl = currentPost?.image ? processImageUrl(currentPost.image) : '';
