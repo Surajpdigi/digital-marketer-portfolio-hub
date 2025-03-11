@@ -14,7 +14,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
-  // Function to process Google Drive links
+  // Process Google Drive links
   const processImageUrl = (url: string) => {
     const match = url.match(/\/d\/([^/]+)/);
     return match ? `https://drive.google.com/uc?id=${match[1]}` : url;
@@ -30,10 +30,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -45,10 +42,12 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden flex flex-col max-w-[90vw] max-h-[90vh]"
+        className="relative bg-white rounded-lg overflow-hidden flex flex-col"
         style={{
-          width: isPortrait ? "400px" : "auto",
-          height: isPortrait ? "600px" : "auto",
+          width: isPortrait ? "40vw" : "60vw",  // Fixed width
+          height: isPortrait ? "60vh" : "40vh", // Fixed height
+          maxWidth: "90vw",
+          maxHeight: "90vh",
         }}
       >
         <Button 
@@ -60,31 +59,28 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
         
-        <div className="flex flex-col">
-          {/* Image container dynamically adapts to image size */}
-          <div className="w-full flex items-center justify-center">
-            {currentPost?.image && (
-              <img 
-                src={imageUrl}
-                alt={currentPost.title || "Post"}
-                className="w-full h-full object-cover"
-                onLoad={handleImageLoad}
-                style={{
-                  maxHeight: "80vh", // Prevents overflow
-                  maxWidth: "100%",   // Keeps it responsive
-                }}
-              />
-            )}
-          </div>
+        <div className="w-full h-full flex items-center justify-center bg-gray-100">
+          {currentPost?.image && (
+            <img 
+              src={imageUrl}
+              alt={currentPost.title || "Post"}
+              className="object-cover w-full h-full"
+              style={{
+                width: isPortrait ? "40vw" : "60vw",
+                height: isPortrait ? "60vh" : "40vh",
+              }}
+              onLoad={handleImageLoad}
+            />
+          )}
+        </div>
           
-          <div className="p-6 bg-white">
-            <h3 className="text-xl font-bold mb-4">
-              {currentPost?.title || "Marketing Post"}
-            </h3>
-            <p className="text-muted-foreground">
-              {currentPost?.description || "Post description"}
-            </p>
-          </div>
+        <div className="p-6 bg-white">
+          <h3 className="text-xl font-bold mb-4">
+            {currentPost?.title || "Marketing Post"}
+          </h3>
+          <p className="text-muted-foreground">
+            {currentPost?.description || "Post description"}
+          </p>
         </div>
       </div>
     </div>
