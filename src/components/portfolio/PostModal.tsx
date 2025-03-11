@@ -45,7 +45,11 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden w-full max-w-3xl flex flex-col"
+        className="relative bg-white rounded-lg overflow-hidden flex flex-col max-w-[90vw] max-h-[90vh]"
+        style={{
+          width: isPortrait ? "400px" : "auto",
+          height: isPortrait ? "600px" : "auto",
+        }}
       >
         <Button 
           variant="ghost" 
@@ -57,14 +61,18 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </Button>
         
         <div className="flex flex-col">
-          {/* Dynamically adjust the container size based on image orientation */}
-          <div className={`bg-gray-100 w-full flex items-center justify-center ${isPortrait ? 'h-[500px] max-w-[400px]' : 'h-[400px] max-w-full'}`}>
+          {/* Image container dynamically adapts to image size */}
+          <div className="w-full flex items-center justify-center">
             {currentPost?.image && (
               <img 
                 src={imageUrl}
                 alt={currentPost.title || "Post"}
                 className="w-full h-full object-cover"
                 onLoad={handleImageLoad}
+                style={{
+                  maxHeight: "80vh", // Prevents overflow
+                  maxWidth: "100%",   // Keeps it responsive
+                }}
               />
             )}
           </div>
