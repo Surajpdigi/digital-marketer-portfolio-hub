@@ -43,7 +43,11 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden w-[80vw] max-w-3xl h-[80vh] flex flex-col"
+        className="relative bg-white rounded-lg overflow-hidden flex flex-col items-center"
+        style={{
+          width: isPortrait ? "40vw" : "80vw",  // Portrait takes less width, landscape takes more
+          height: isPortrait ? "80vh" : "60vh", // Portrait takes more height, landscape takes less
+        }}
       >
         <Button 
           variant="ghost" 
@@ -56,8 +60,10 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         
         {/* Image Container */}
         <div 
-          className={`flex items-center justify-center bg-gray-100 
-          ${isPortrait ? "h-[60%] w-full" : "h-[70%] w-full"}`}
+          className="flex items-center justify-center bg-gray-100 w-full"
+          style={{
+            height: isPortrait ? "70%" : "80%", // Adjust height dynamically
+          }}
         >
           {currentPost?.image && (
             <img 
@@ -70,11 +76,11 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </div>
         
         {/* Text Content */}
-        <div className="p-6 bg-white h-[30%] overflow-auto">
-          <h3 className="text-xl font-bold mb-4">
+        <div className="p-6 bg-white w-full overflow-auto" style={{ height: "20%" }}>
+          <h3 className="text-xl font-bold mb-4 text-center">
             {currentPost?.title || "Marketing Post"}
           </h3>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-center">
             {currentPost?.description || "Post description"}
           </p>
         </div>
