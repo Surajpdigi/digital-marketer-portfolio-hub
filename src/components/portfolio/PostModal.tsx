@@ -11,7 +11,6 @@ type PostModalProps = {
 
 export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
@@ -40,7 +39,6 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
     setIsPortrait(img.naturalHeight > img.naturalWidth);
-    setImageLoaded(true);
   };
 
   return (
@@ -59,12 +57,13 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </Button>
         
         <div className="flex flex-col">
-          <div className="bg-gray-100 w-full flex items-center justify-center h-[400px]">
+          {/* Dynamically adjust the container size based on image orientation */}
+          <div className={`bg-gray-100 w-full flex items-center justify-center ${isPortrait ? 'h-[500px] max-w-[400px]' : 'h-[400px] max-w-full'}`}>
             {currentPost?.image && (
               <img 
                 src={imageUrl}
                 alt={currentPost.title || "Post"}
-                className="max-h-[400px] max-w-full object-contain"
+                className="w-full h-full object-cover"
                 onLoad={handleImageLoad}
               />
             )}
