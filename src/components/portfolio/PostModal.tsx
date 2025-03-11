@@ -14,7 +14,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
-  // Process Google Drive links
+  // Function to process Google Drive links
   const processImageUrl = (url: string) => {
     const match = url.match(/\/d\/([^/]+)/);
     return match ? `https://drive.google.com/uc?id=${match[1]}` : url;
@@ -30,7 +30,10 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [onClose]);
 
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -42,12 +45,10 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden flex flex-col"
+        className="relative bg-white rounded-lg overflow-hidden flex flex-col max-w-[90vw] max-h-[90vh]"
         style={{
-          width: isPortrait ? "40vw" : "60vw",  // Consistent width
-          height: isPortrait ? "60vh" : "40vh", // Consistent height
-          maxWidth: "90vw",
-          maxHeight: "90vh",
+          width: isPortrait ? "400px" : "auto",
+          height: isPortrait ? "600px" : "auto",
         }}
       >
         <Button 
@@ -59,14 +60,19 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
         
-        <div className="flex flex-col flex-grow">
-          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+        <div className="flex flex-col">
+          {/* Image container dynamically adapts to image size */}
+          <div className="w-full flex items-center justify-center">
             {currentPost?.image && (
               <img 
                 src={imageUrl}
                 alt={currentPost.title || "Post"}
-                className="object-contain w-full h-full"
+                className="w-full h-full object-cover"
                 onLoad={handleImageLoad}
+                style={{
+                  maxHeight: "80vh", // Prevents overflow
+                  maxWidth: "100%",   // Keeps it responsive
+                }}
               />
             )}
           </div>
