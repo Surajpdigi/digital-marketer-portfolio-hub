@@ -11,7 +11,6 @@ type PostModalProps = {
 
 export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
-  const [isPortrait, setIsPortrait] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const currentPost = postProjects.find(p => p.id === postId);
 
@@ -35,71 +34,71 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     };
   }, [onClose]);
 
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    setIsPortrait(img.naturalHeight > img.naturalWidth);
-  };
-
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className="relative bg-white rounded-lg overflow-hidden flex flex-col items-center"
+        className="relative bg-white rounded-lg flex flex-col items-center shadow-lg"
         style={{
-          width: isPortrait ? "40vw" : "40vw",
-          height: "65vh", // Fixed height
+          width: "90vw", 
+          maxWidth: "500px", 
+          maxHeight: "90vh", 
+          overflow: "hidden" 
         }}
       >
         <Button 
           variant="ghost" 
           size="icon"
-          className="absolute top-2 right-2 z-10 bg-white/10 text-white hover:bg-white/20"
+          className="absolute top-2 right-2 z-10 bg-white/10 text-black hover:bg-white/20"
           onClick={onClose}
         >
           <X className="h-5 w-5" />
         </Button>
         
         {/* Image Container */}
-        <div 
-          className="flex items-center justify-center bg-gray-100 w-full"
-          style={{
-            height: "70%", // Image section remains same
-          }}
-        >
+        <div className="w-full bg-gray-100" style={{ height: "60%" }}>
           {currentPost?.image && (
             <img 
               src={imageUrl}
               alt={currentPost.title || "Post"}
-              className="w-full h-full object-contain"
-              onLoad={handleImageLoad}
+              className="w-full h-full object-cover rounded-t-lg"
             />
           )}
         </div>
         
         {/* Text Content */}
         <div className="p-4 bg-white w-full">
-          <h3 className="text-lg font-bold text-center">
-            {currentPost?.title || "Marketing Post"}
-          </h3>
+          <h3 className="text-lg font-bold">{currentPost?.title || "Post Title"}</h3>
 
-          {/* Description Container */}
+          {/* Description */}
           <div 
-            className="relative text-gray-600 transition-all px-4"
+            className={`text-gray-600 transition-all`}
             style={{
-              height: expanded ? "150px" : "30px", // Expands vertically
-              overflowY: expanded ? "auto" : "hidden", // Scrolls if needed
+              maxHeight: expanded ? "4.5em" : "1.5em", // Expands to 3 lines, starts at 1
+              overflowY: expanded ? "auto" : "hidden",
+              position: "relative",
             }}
           >
-            <p>{currentPost?.description || "Post description"}</p>
+            <p className="inline">
+              {currentPost?.description || "Post description"}{" "}
+              {!expanded && (
+                <span 
+                  className="text-blue-500 cursor-pointer" 
+                  onClick={() => setExpanded(true)}
+                >
+                  Show More
+                </span>
+              )}
+            </p>
           </div>
 
-          {/* Show More / Show Less Button */}
-          {currentPost?.description && currentPost.description.length > 50 && (
+          {/* Show Less Button */}
+          {expanded && (
             <button
-              onClick={() => setExpanded(!expanded)}
-              className="text-blue-500 text-sm mt-2 block mx-auto"
+              onClick={() => setExpanded(false)}
+              className="text-blue-500 text-sm mt-2 block"
             >
-              {expanded ? "Show Less" : "Show More"}
+              Show Less
             </button>
           )}
         </div>
