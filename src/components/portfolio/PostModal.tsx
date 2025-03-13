@@ -47,7 +47,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         className="relative bg-white rounded-lg overflow-hidden flex flex-col items-center"
         style={{
           width: isPortrait ? "40vw" : "40vw",
-          height: isPortrait ? "80vh" : "65vh",
+          height: isPortrait ? (expanded ? "80vh" : "65vh") : (expanded ? "75vh" : "65vh"),
         }}
       >
         <Button 
@@ -84,16 +84,15 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
 
           {/* Description Container */}
           <div 
-            className={`relative text-center text-gray-600 transition-all ${
-              expanded ? "max-h-full" : "max-h-16 overflow-hidden"
-            } break-words px-4`}
-            style={{ wordWrap: "break-word", maxWidth: "100%" }} // Prevents text overflow
+            className={`relative text-gray-600 transition-all px-4`}
+            style={{
+              maxHeight: expanded ? "120px" : "20px",  // Expands to 120px or collapses to 20px (1 line)
+              overflow: expanded ? "auto" : "hidden",
+              whiteSpace: expanded ? "normal" : "nowrap",
+              textOverflow: "ellipsis",
+            }}
           >
             <p>{currentPost?.description || "Post description"}</p>
-
-            {!expanded && (
-              <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent"></div>
-            )}
           </div>
 
           {/* Show More / Show Less Button */}
