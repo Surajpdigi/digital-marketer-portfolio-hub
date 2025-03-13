@@ -45,7 +45,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         ref={modalRef} 
         className="relative bg-white rounded-lg overflow-hidden flex flex-col items-center"
         style={{
-          width: isPortrait ? "40vw" : "80vw",  // Portrait takes less width, landscape takes more
+          width: isPortrait ? "40vw" : "60vw",  // Portrait takes less width, landscape takes more
           height: isPortrait ? "80vh" : "60vh", // Portrait takes more height, landscape takes less
         }}
       >
