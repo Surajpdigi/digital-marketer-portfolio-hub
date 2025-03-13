@@ -77,34 +77,32 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </div>
         
         {/* Text Content */}
-        <div className="p-6 bg-white w-full" style={{ height: expanded ? "auto" : "20%" }}>
-          <h3 className="text-xl font-bold mb-4 text-center">
+        <div className="p-4 bg-white w-full">
+          <h3 className="text-lg font-bold text-center">
             {currentPost?.title || "Marketing Post"}
           </h3>
 
-          <p className={`text-muted-foreground text-center ${expanded ? "" : "line-clamp-1"}`}>
-            {currentPost?.description || "Post description"}
-          </p>
+          {/* Description Container */}
+          <div 
+            className={`relative text-center text-gray-600 transition-all ${
+              expanded ? "max-h-full" : "max-h-16 overflow-hidden"
+            }`}
+          >
+            <p className="px-4">{currentPost?.description || "Post description"}</p>
 
-          {!expanded ? (
+            {!expanded && (
+              <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent"></div>
+            )}
+          </div>
+
+          {/* Show More / Show Less Button */}
+          {currentPost?.description && currentPost.description.length > 100 && (
             <button
-              onClick={() => setExpanded(true)}
+              onClick={() => setExpanded(!expanded)}
               className="text-blue-500 text-sm mt-2 block mx-auto"
             >
-              Show More
+              {expanded ? "Show Less" : "Show More"}
             </button>
-          ) : (
-            <div className="overflow-auto mt-2" style={{ maxHeight: "100px" }}>
-              <p className="text-muted-foreground text-center">
-                {currentPost?.description}
-              </p>
-              <button
-                onClick={() => setExpanded(false)}
-                className="text-blue-500 text-sm mt-2 block mx-auto"
-              >
-                Show Less
-              </button>
-            </div>
           )}
         </div>
       </div>
