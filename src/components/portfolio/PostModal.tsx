@@ -47,7 +47,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         className="relative bg-white rounded-lg overflow-hidden flex flex-col items-center"
         style={{
           width: isPortrait ? "40vw" : "40vw",
-          height: isPortrait ? (expanded ? "80vh" : "65vh") : (expanded ? "75vh" : "65vh"),
+          height: "65vh", // Fixed height
         }}
       >
         <Button 
@@ -63,7 +63,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         <div 
           className="flex items-center justify-center bg-gray-100 w-full"
           style={{
-            height: isPortrait ? "70%" : "80%",
+            height: "70%", // Image section remains same
           }}
         >
           {currentPost?.image && (
@@ -84,19 +84,17 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
 
           {/* Description Container */}
           <div 
-            className={`relative text-gray-600 transition-all px-4`}
+            className="relative text-gray-600 transition-all px-4"
             style={{
-              maxHeight: expanded ? "120px" : "20px",  // Expands to 120px or collapses to 20px (1 line)
-              overflow: expanded ? "auto" : "hidden",
-              whiteSpace: expanded ? "normal" : "nowrap",
-              textOverflow: "ellipsis",
+              height: expanded ? "150px" : "30px", // Expands vertically
+              overflowY: expanded ? "auto" : "hidden", // Scrolls if needed
             }}
           >
             <p>{currentPost?.description || "Post description"}</p>
           </div>
 
           {/* Show More / Show Less Button */}
-          {currentPost?.description && currentPost.description.length > 100 && (
+          {currentPost?.description && currentPost.description.length > 50 && (
             <button
               onClick={() => setExpanded(!expanded)}
               className="text-blue-500 text-sm mt-2 block mx-auto"
