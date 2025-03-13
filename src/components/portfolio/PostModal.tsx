@@ -50,6 +50,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           height: isPortrait ? "80vh" : "65vh",
         }}
       >
+        {/* Close Button */}
         <Button 
           variant="ghost" 
           size="icon"
@@ -83,29 +84,11 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           </h3>
 
           {/* Description Container */}
-          <div 
-            className={`relative text-center text-gray-600 transition-all ${
-              expanded ? "max-h-full" : "max-h-16 overflow-hidden"
-            }`}
-          >
-            <p className="px-4">{currentPost?.description || "Post description"}</p>
-
-            {!expanded && (
-              <div className="absolute bottom-0 left-0 w-full h-6 bg-gradient-to-t from-white to-transparent"></div>
-            )}
+          <div className="relative text-center text-gray-600 transition-all">
+            <p className={`px-4 ${expanded ? "line-clamp-none" : "line-clamp-3"}`}>
+              {currentPost?.description || "Post description"}
+            </p>
           </div>
 
           {/* Show More / Show Less Button */}
-          {currentPost?.description && currentPost.description.length > 100 && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="text-blue-500 text-sm mt-2 block mx-auto"
-            >
-              {expanded ? "Show Less" : "Show More"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+          {currentPost?.description && currentPost
