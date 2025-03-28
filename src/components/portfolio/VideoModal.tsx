@@ -44,6 +44,15 @@ const extractYouTubeId = (url: string): string => {
   return url;
 };
 
+// Helper function to convert Google Drive link to direct image link
+const getDriveImageLink = (url: string): string => {
+  const match = url.match(/\/d\/(.*)\/view/);
+  if (match && match[1]) {
+    return `https://drive.google.com/uc?id=${match[1]}`;
+  }
+  return url; // Return the original URL if it doesn't match
+};
+
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -97,6 +106,13 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
           <p className="text-muted-foreground">
             {currentVideo?.description || "Video description"}
           </p>
+          {currentVideo?.imageUrl && (
+            <img
+              src={getDriveImageLink(currentVideo.imageUrl)}
+              alt={currentVideo.title || "Video image"}
+              className="mt-4 w-full max-w-md rounded-lg shadow-lg"
+            />
+          )}
         </div>
       </div>
     </div>
