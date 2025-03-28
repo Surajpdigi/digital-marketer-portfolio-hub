@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Play } from "lucide-react";
 import { VideoProject } from "./ProjectTypes";
 
 type VideoModalProps = {
@@ -60,6 +60,7 @@ const getYouTubeThumbnail = (videoId: string): string => {
 
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -95,14 +96,30 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
         >
           <X className="h-5 w-5" />
         </Button>
-        <div className={isShort ? 'aspect-[9/16] w-full' : 'aspect-video w-full'}>
-          <iframe 
-            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
-            title="YouTube video player"
-            className="w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
+        <div className={isShort ? 'aspect-[9/16] w-full relative' : 'aspect-video w-full relative'}>
+          {isPlaying ? (
+            <iframe 
+              src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
+              title="YouTube video player"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <div
+              className="w-full h-full cursor-pointer relative"
+              onClick={() => setIsPlaying(true)}
+            >
+              <img
+                src={getYouTubeThumbnail(youtubeId)}
+                alt={currentVideo?.title || "YouTube thumbnail"}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <Play className="h-16 w-16 text-white bg-black/60 rounded-full p-3" />
+              </div>
+            </div>
+          )}
         </div>
         <div className="p-4 bg-white">
           <h3 className="text-xl font-bold mb-2">
@@ -111,16 +128,10 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
           <p className="text-muted-foreground">
             {currentVideo?.description || "Video description"}
           </p>
-          {currentVideo?.imageUrl ? (
+          {currentVideo?.imageUrl && !isPlaying && (
             <img
               src={getDriveImageLink(currentVideo.imageUrl)}
               alt={currentVideo.title || "Video image"}
-              className="mt-4 w-full max-w-md rounded-lg shadow-lg"
-            />
-          ) : (
-            <img
-              src={getYouTubeThumbnail(youtubeId)}
-              alt={currentVideo?.title || "YouTube thumbnail"}
               className="mt-4 w-full max-w-md rounded-lg shadow-lg"
             />
           )}
