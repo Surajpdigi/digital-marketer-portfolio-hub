@@ -53,6 +53,11 @@ const getDriveImageLink = (url: string): string => {
   return url; // Return the original URL if it doesn't match
 };
 
+// Helper function to get YouTube video thumbnail from video ID
+const getYouTubeThumbnail = (videoId: string): string => {
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+};
+
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -106,10 +111,16 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
           <p className="text-muted-foreground">
             {currentVideo?.description || "Video description"}
           </p>
-          {currentVideo?.imageUrl && (
+          {currentVideo?.imageUrl ? (
             <img
               src={getDriveImageLink(currentVideo.imageUrl)}
               alt={currentVideo.title || "Video image"}
+              className="mt-4 w-full max-w-md rounded-lg shadow-lg"
+            />
+          ) : (
+            <img
+              src={getYouTubeThumbnail(youtubeId)}
+              alt={currentVideo?.title || "YouTube thumbnail"}
               className="mt-4 w-full max-w-md rounded-lg shadow-lg"
             />
           )}
