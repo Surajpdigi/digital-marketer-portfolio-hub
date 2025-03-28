@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -14,27 +13,33 @@ type VideoModalProps = {
 // Helper function to extract YouTube video ID from URL
 const extractYouTubeId = (url: string): string => {
   if (!url) return '';
-  
+
   // Check if it's already just an ID
-  if (url.length === 11 || url.indexOf('/') === -1) {
+  if (url.length === 11 && !url.includes('/')) {
     return url;
   }
-  
+
+  // Handle YouTube shorts URL format
+  const shortsMatch = url.match(/(?:youtube\.com\/shorts\/|youtu\.be\/)([^#&?]{11})/);
+  if (shortsMatch && shortsMatch[1]) {
+    return shortsMatch[1];
+  }
+
   // Handle various YouTube URL formats
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
   const match = url.match(regExp);
-  
-  // Also handle YouTube shorts and other formats
+
+  // Check if valid YouTube video ID is found
   if (match && match[2].length === 11) {
     return match[2];
   }
-  
+
   // For "v=" format without full URL
   if (url.startsWith('v=')) {
     const id = url.substring(2).split('&')[0];
     return id;
   }
-  
+
   // Just return whatever we have as a fallback
   return url;
 };
@@ -50,7 +55,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
