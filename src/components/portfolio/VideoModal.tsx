@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Play } from "lucide-react";
@@ -134,11 +135,22 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
             {currentVideo?.description || "Video description"}
           </p>
           {currentVideo?.imageUrl && !isPlaying && (
-            <img
-              src={getDriveImageLink(currentVideo.imageUrl)}
-              alt={currentVideo.title || "Video image"}
-              className="mt-4 w-full max-w-md rounded-lg shadow-lg"
-            />
+            <div className="mt-4">
+              <img
+                src={getDriveImageLink(currentVideo.imageUrl)}
+                alt={currentVideo.title || "Video image"}
+                className="w-full max-w-md rounded-lg shadow-lg"
+              />
+            </div>
+          )}
+          {!currentVideo?.imageUrl && !isPlaying && (
+            <div className="mt-4">
+              <img
+                src={getYouTubeThumbnail(youtubeId)}
+                alt={currentVideo?.title || "Default video cover"}
+                className="w-full max-w-md rounded-lg shadow-lg" 
+              />
+            </div>
           )}
         </div>
       </div>
