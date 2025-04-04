@@ -11,7 +11,7 @@ function processGoogleDriveUrl(url: string): string {
   if (!url) return url;
   
   // Check if it's already in the correct format
-  if (url.includes('drive.google.com/uc?export=view&id=')) {
+  if (url.includes('drive.google.com/uc?')) {
     return url;
   }
   
@@ -23,6 +23,12 @@ function processGoogleDriveUrl(url: string): string {
       const fileId = fileIdMatch[1] || fileIdMatch[2];
       return `https://drive.google.com/uc?export=view&id=${fileId}`;
     }
+  }
+  
+  // Match different Google Drive link formats (e.g., shareable links)
+  const idMatch = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
+  if (idMatch && idMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
   }
   
   return url;

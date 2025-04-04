@@ -46,11 +46,16 @@ const extractYouTubeId = (url: string): string => {
 
 // Helper function to convert Google Drive link to direct image link
 const getDriveImageLink = (url: string): string => {
-  const match = url.match(/\/d\/(.*)\/view/);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?id=${match[1]}`;
+  if (!url) return "";
+  
+  // Check if it's already in the correct format
+  if (url.includes('drive.google.com/uc?')) {
+    return url;
   }
-  return url; // Return the original URL if it doesn't match
+  
+  // Match different Google Drive link formats
+  const match = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
+  return match ? `https://drive.google.com/uc?export=view&id=${match[1]}` : url;
 };
 
 // Helper function to get YouTube video thumbnail from video ID

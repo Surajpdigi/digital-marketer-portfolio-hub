@@ -20,8 +20,22 @@ export const getImageSource = (project: Project): string => {
   } else {
     imageUrl = (project as PostProject).image || '';
   }
+
+  // Process Google Drive links
+  if (imageUrl && imageUrl.includes('drive.google.com')) {
+    // Check if it's already in the correct format
+    if (imageUrl.includes('drive.google.com/uc?')) {
+      return imageUrl;
+    }
+    
+    // Match different Google Drive link formats
+    const match = imageUrl.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
+    if (match) {
+      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+  }
   
-  // Check if the URL is from placeholder service and the image exists
+  // Check if the URL is from placeholder service or doesn't exist
   if (imageUrl.includes('via.placeholder.com') || !imageUrl) {
     return isVideoProject(project) 
       ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" 
