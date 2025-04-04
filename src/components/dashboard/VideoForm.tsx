@@ -11,6 +11,7 @@ const VideoForm = () => {
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [thumbnail, setThumbnail] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [isShort, setIsShort] = useState(false);
   
   const { addVideo } = useContent();
@@ -26,11 +27,11 @@ const VideoForm = () => {
     e.preventDefault();
     
     // Validate form
-    if (!title || !description || !url || !thumbnail) {
+    if (!title || !description || !url) {
       toast({
         variant: 'destructive',
         title: 'Missing information',
-        description: 'Please fill in all fields.',
+        description: 'Please fill in at least the title, description and URL.',
       });
       return;
     }
@@ -46,13 +47,17 @@ const VideoForm = () => {
       return;
     }
 
+    // If no thumbnail is provided, generate one from the YouTube video ID
+    const finalThumbnail = thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
     const newVideo: VideoContent = {
       id: videoId,
       title,
       description,
       url,
-      thumbnail,
+      thumbnail: finalThumbnail,
       isShort,
+      imageUrl: imageUrl || undefined
     };
 
     addVideo(newVideo);
@@ -66,6 +71,7 @@ const VideoForm = () => {
     setDescription('');
     setUrl('');
     setThumbnail('');
+    setImageUrl('');
     setIsShort(false);
   };
 
@@ -106,13 +112,29 @@ const VideoForm = () => {
         </div>
         
         <div>
-          <label htmlFor="thumbnailUrl" className="block text-sm font-medium mb-1">Thumbnail URL</label>
+          <label htmlFor="thumbnailUrl" className="block text-sm font-medium mb-1">Thumbnail URL (optional)</label>
           <Input
             id="thumbnailUrl"
             value={thumbnail}
             onChange={(e) => setThumbnail(e.target.value)}
-            placeholder="https://example.com/image.jpg"
+            placeholder="Leave blank to use YouTube thumbnail"
           />
+          <p className="text-xs text-muted-foreground mt-1">
+            If left blank, the YouTube video thumbnail will be used automatically
+          </p>
+        </div>
+
+        <div>
+          <label htmlFor="imageUrl" className="block text-sm font-medium mb-1">Cover Image URL (optional)</label>
+          <Input
+            id="imageUrl"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="https://example.com/image.jpg or Google Drive link"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Additional cover image to show in the video modal
+          </p>
         </div>
         
         <div className="flex items-center">

@@ -12,11 +12,41 @@ export const isVideoProject = (project: Project): project is VideoProject => {
   return project.category === "video";
 };
 
+// Helper function to extract YouTube video ID from URL
+const extractYouTubeId = (url: string): string => {
+  if (!url) return '';
+
+  // Check if it's already just an ID
+  if (url.length === 11 && !url.includes('/')) {
+    return url;
+  }
+
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+
+  return (match && match[2].length === 11) ? match[2] : url;
+};
+
+// Helper to get YouTube thumbnail
+const getYouTubeThumbnail = (videoId: string): string => {
+  return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+};
+
 export const getImageSource = (project: Project): string => {
   let imageUrl = '';
   
   if (project.category === "video") {
-    imageUrl = (project as VideoProject).thumbnail || '';
+    const videoProject = project as VideoProject;
+    
+    // First try to use the thumbnail
+    if (videoProject.thumbnail) {
+      imageUrl = videoProject.thumbnail;
+    } 
+    // If no thumbnail, try to generate one from YouTube URL
+    else if (videoProject.url) {
+      const youtubeId = extractYouTubeId(videoProject.url);
+      return getYouTubeThumbnail(youtubeId);
+    }
   } else {
     imageUrl = (project as PostProject).image || '';
   }
@@ -32,6 +62,15 @@ export const getImageSource = (project: Project): string => {
     const match = imageUrl.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
     if (match) {
       return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    }
+    
+    // Handle sharing URLs format
+    if (imageUrl.includes('drive.google.com/file/d/')) {
+      const parts = imageUrl.split('/');
+      const fileIdIndex = parts.indexOf('d') + 1;
+      if (fileIdIndex > 0 && fileIdIndex < parts.length) {
+        return `https://drive.google.com/uc?export=view&id=${parts[fileIdIndex]}`;
+      }
     }
   }
   
@@ -51,6 +90,13 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
   const fallbackImage = isVideoProject(project)
     ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
     : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+  
+  // For video projects, try to get YouTube thumbnail if available
+  let imageSource = getImageSource(project);
+  if (isVideoProject(project) && (project as VideoProject).url && (!imageSource || imageError)) {
+    const youtubeId = extractYouTubeId((project as VideoProject).url || '');
+    imageSource = getYouTubeThumbnail(youtubeId);
+  }
     
   return (
     <div 
@@ -59,12 +105,20 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
     >
       <div className="aspect-video">
         <img 
-          src={imageError ? fallbackImage : getImageSource(project)}
+          src={imageError ? fallbackImage : imageSource}
           alt={project.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
-            console.log(`Image failed to load: ${getImageSource(project)}`);
-            setImageError(true);
+            console.log(`Image failed to load: ${imageSource}`);
+            if (isVideoProject(project) && (project as VideoProject).url && !imageError) {
+              // Try YouTube thumbnail as fallback for videos
+              const youtubeId = extractYouTubeId((project as VideoProject).url || '');
+              e.currentTarget.src = getYouTubeThumbnail(youtubeId);
+              setImageError(true);
+            } else {
+              e.currentTarget.src = fallbackImage;
+              setImageError(true);
+            }
           }}
         />
         {isVideoProject(project) && (

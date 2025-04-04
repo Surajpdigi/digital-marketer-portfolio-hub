@@ -34,6 +34,20 @@ function processGoogleDriveUrl(url: string): string {
   return url;
 }
 
+// Function to extract YouTube ID
+function extractYouTubeId(url: string): string | null {
+  if (!url) return null;
+  
+  // Check if it's already an ID
+  if (url.length === 11 && !url.includes('/')) {
+    return url;
+  }
+  
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
 // Fetch data from Google Sheets CSV
 export async function fetchGoogleSheet(sheetURL: string) {
   try {
@@ -135,14 +149,29 @@ function parseCSVLine(line: string): string[] {
 // Function to convert raw data to VideoContent objects
 export async function fetchVideos(): Promise<VideoContent[]> {
   const data = await fetchGoogleSheet(VIDEOS_SHEET_URL);
-  return data.map((item: any, index) => ({
-    id: item.id || String(index + 1),
-    title: item.title || "Untitled Video",
-    description: item.description || "",
-    url: item.url || "",
-    thumbnail: processGoogleDriveUrl(item.thumbnail) || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-    isShort: item.isShort === "true" || item.isShort === "TRUE" || false
-  }));
+  return data.map((item: any, index) => {
+    const videoId = item.id || String(index + 1);
+    const url = item.url || "";
+    
+    // Get thumbnail from data or generate from YouTube ID if possible
+    let thumbnail = item.thumbnail || "";
+    if (!thumbnail && url) {
+      const youtubeId = extractYouTubeId(url);
+      if (youtubeId) {
+        thumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+      }
+    }
+    
+    return {
+      id: videoId,
+      title: item.title || "Untitled Video",
+      description: item.description || "",
+      url: url,
+      thumbnail: processGoogleDriveUrl(thumbnail) || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      isShort: item.isShort === "true" || item.isShort === "TRUE" || false,
+      imageUrl: item.imageUrl ? processGoogleDriveUrl(item.imageUrl) : undefined
+    };
+  });
 }
 
 // Function to convert raw data to PostContent objects

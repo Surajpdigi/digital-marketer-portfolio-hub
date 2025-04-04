@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchVideos, fetchPosts, fetchBlogPosts } from '@/utils/googleSheetsUtils';
 
@@ -9,6 +8,7 @@ export type VideoContent = {
   url: string;
   thumbnail: string;
   isShort?: boolean;
+  imageUrl?: string;
 };
 
 export type PostContent = {
@@ -88,7 +88,6 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
       setIsLoading(true);
       
       try {
-        // First try to load from localStorage for faster initial render
         const savedVideos = localStorage.getItem('dashboardVideos');
         const savedPosts = localStorage.getItem('dashboardPosts');
         const savedBlogPosts = localStorage.getItem('dashboardBlogPosts');
@@ -101,7 +100,6 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
           }
         }
         
-        // Then refresh from Google Sheets
         await refreshContent();
       } catch (error) {
         console.error("Error loading content:", error);

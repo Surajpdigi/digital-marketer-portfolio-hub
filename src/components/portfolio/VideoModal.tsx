@@ -55,18 +55,33 @@ const getDriveImageLink = (url: string): string => {
   }
   
   // Match different Google Drive link formats
-  const match = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
-  return match ? `https://drive.google.com/uc?export=view&id=${match[1]}` : url;
+  const fileIdMatch = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+  }
+
+  // Handle sharing URLs format
+  if (url.includes('drive.google.com/file/d/')) {
+    const parts = url.split('/');
+    const fileIdIndex = parts.indexOf('d') + 1;
+    if (fileIdIndex > 0 && fileIdIndex < parts.length) {
+      return `https://drive.google.com/uc?export=view&id=${parts[fileIdIndex]}`;
+    }
+  }
+  
+  return url;
 };
 
 // Helper function to get YouTube video thumbnail from video ID
 const getYouTubeThumbnail = (videoId: string): string => {
+  if (!videoId) return '';
   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 };
 
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,6 +99,11 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
 
   const currentVideo = videoProjects.find(v => v.id === videoId);
   const youtubeId = currentVideo?.url ? extractYouTubeId(currentVideo.url) : videoId;
+
+  // Reset thumbnail error state when video changes
+  useEffect(() => {
+    setThumbnailError(false);
+  }, [videoId]);
 
   console.log("Current video:", currentVideo);
   console.log("YouTube ID:", youtubeId);
@@ -120,6 +140,10 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
                 src={getYouTubeThumbnail(youtubeId)}
                 alt={currentVideo?.title || "YouTube thumbnail"}
                 className="w-full h-full object-cover"
+                onError={() => {
+                  setThumbnailError(true);
+                  console.log("Failed to load YouTube thumbnail");
+                }}
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 <Play className="h-16 w-16 text-white bg-black/60 rounded-full p-3" />
@@ -140,6 +164,10 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
                 src={getDriveImageLink(currentVideo.imageUrl)}
                 alt={currentVideo.title || "Video image"}
                 className="w-full max-w-md rounded-lg shadow-lg"
+                onError={(e) => {
+                  console.log("Failed to load image from Drive:", currentVideo.imageUrl);
+                  e.currentTarget.src = getYouTubeThumbnail(youtubeId);
+                }}
               />
             </div>
           )}
@@ -148,7 +176,11 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
               <img
                 src={getYouTubeThumbnail(youtubeId)}
                 alt={currentVideo?.title || "Default video cover"}
-                className="w-full max-w-md rounded-lg shadow-lg" 
+                className="w-full max-w-md rounded-lg shadow-lg"
+                onError={(e) => {
+                  console.log("Failed to load YouTube thumbnail");
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+                }}
               />
             </div>
           )}
