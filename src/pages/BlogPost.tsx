@@ -7,6 +7,50 @@ import { useContent } from "@/context/ContentContext";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Process Google Drive URLs
+const processGoogleDriveUrl = (url: string): string => {
+  if (!url) return '';
+  
+  // Already in the correct format
+  if (url.includes('drive.google.com/uc?')) {
+    return url;
+  }
+  
+  // File ID format: /d/FILE_ID/
+  if (url.includes('drive.google.com/file/d/')) {
+    const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+  }
+  
+  // Alternate format with open?id=
+  if (url.includes('open?id=')) {
+    const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle view links
+  if (url.includes('/view')) {
+    const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
+  
+  return url;
+};
+
 const BlogPost = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
@@ -20,6 +64,9 @@ const BlogPost = () => {
       navigate('/not-found');
     }
   }, [post, isLoading, blogPosts, navigate]);
+
+  // Process the image URL if it exists
+  const processedImageUrl = post?.image ? processGoogleDriveUrl(post.image) : '';
 
   return (
     <>
@@ -48,11 +95,15 @@ const BlogPost = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
             </Link>
-            <div className="aspect-video relative overflow-hidden rounded-lg mb-8">
+            <div className="aspect-video relative overflow-hidden rounded-lg mb-8 max-h-[60vh] flex justify-center">
               <img 
-                src={post.image} 
+                src={processedImageUrl || post.image} 
                 alt={post.title}
-                className="object-cover w-full h-full"
+                className="object-contain max-w-full max-h-[60vh]"
+                onError={(e) => {
+                  console.log("Failed to load blog image:", processedImageUrl);
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+                }}
               />
             </div>
             <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">

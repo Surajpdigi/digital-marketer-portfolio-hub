@@ -64,6 +64,14 @@ const processGoogleDriveUrl = (url: string): string => {
       return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
     }
   }
+
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
   
   return url;
 };
@@ -77,7 +85,7 @@ export const getImageSource = (project: Project): string => {
       return processGoogleDriveUrl(videoProject.thumbnail);
     } 
     
-    // If no thumbnail or it's empty, generate one from YouTube URL
+    // Always get YouTube thumbnail for videos if URL exists
     if (videoProject.url) {
       const youtubeId = extractYouTubeId(videoProject.url);
       if (youtubeId) {
@@ -120,15 +128,20 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           onError={(e) => {
             console.log(`Image failed to load: ${imageSource}`);
+            
+            // For videos, try YouTube thumbnail if possible
             if (isVideoProject(project) && (project as VideoProject).url && !imageError) {
-              // Try YouTube thumbnail as fallback for videos
               const youtubeId = extractYouTubeId((project as VideoProject).url || '');
-              e.currentTarget.src = getYouTubeThumbnail(youtubeId);
-              setImageError(true);
-            } else {
-              e.currentTarget.src = fallbackImage;
-              setImageError(true);
+              if (youtubeId) {
+                console.log("Falling back to YouTube thumbnail");
+                e.currentTarget.src = getYouTubeThumbnail(youtubeId);
+                setImageError(true);
+                return;
+              }
             }
+            
+            e.currentTarget.src = fallbackImage;
+            setImageError(true);
           }}
         />
         {isVideoProject(project) && (
@@ -140,8 +153,8 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
         )}
       </div>
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-6">
-        <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-        <p className="text-center">{project.description}</p>
+        <h3 className="text-xl font-bold mb-2 text-center">{project.title}</h3>
+        <p className="text-center text-sm line-clamp-3 overflow-hidden">{project.description}</p>
       </div>
     </div>
   );

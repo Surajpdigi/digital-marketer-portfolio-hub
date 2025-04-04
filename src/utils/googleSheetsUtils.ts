@@ -39,6 +39,22 @@ function processGoogleDriveUrl(url: string): string {
     }
   }
   
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
+
+  // Handle direct sharing URLs
+  if (url.includes('drive.google.com/file/d/')) {
+    const shareIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (shareIdMatch && shareIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${shareIdMatch[1]}`;
+    }
+  }
+  
   return url;
 }
 

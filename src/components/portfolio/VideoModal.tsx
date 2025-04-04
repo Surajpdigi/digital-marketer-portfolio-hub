@@ -78,6 +78,14 @@ const processGoogleDriveUrl = (url: string): string => {
     }
   }
   
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
+  
   return url;
 };
 
@@ -90,8 +98,6 @@ const getYouTubeThumbnail = (videoId: string): string => {
 export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [thumbnailError, setThumbnailError] = useState(false);
-  const [coverImageError, setCoverImageError] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -110,28 +116,11 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
   const currentVideo = videoProjects.find(v => v.id === videoId);
   const youtubeId = currentVideo?.url ? extractYouTubeId(currentVideo.url) : videoId;
 
-  // Reset error states when video changes
-  useEffect(() => {
-    setThumbnailError(false);
-    setCoverImageError(false);
-  }, [videoId]);
-
-  // Calculate if YouTube thumbnail is needed as fallback
-  const needsYouTubeThumbnail = !currentVideo?.imageUrl || coverImageError;
-  const youtubeThumbnailUrl = youtubeId ? getYouTubeThumbnail(youtubeId) : '';
-  
-  // Process the cover image URL if available
-  const coverImageUrl = currentVideo?.imageUrl ? processGoogleDriveUrl(currentVideo.imageUrl) : '';
-
-  console.log("Current video:", currentVideo);
-  console.log("YouTube ID:", youtubeId);
-  console.log("Cover image URL:", coverImageUrl);
-
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
       <div 
         ref={modalRef} 
-        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'}`}
+        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'} max-h-[90vh]`}
       >
         <Button 
           variant="ghost" 
@@ -159,9 +148,9 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
                 src={getYouTubeThumbnail(youtubeId)}
                 alt={currentVideo?.title || "YouTube thumbnail"}
                 className="w-full h-full object-cover"
-                onError={() => {
-                  setThumbnailError(true);
+                onError={(e) => {
                   console.log("Failed to load YouTube thumbnail");
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
                 }}
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -170,46 +159,14 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
             </div>
           )}
         </div>
-        <div className="p-4 bg-white">
+        <div className="p-4 bg-white max-h-[30vh] overflow-y-auto">
           <h3 className="text-xl font-bold mb-2">
             {currentVideo?.title || "Marketing Video"}
           </h3>
           <p className="text-muted-foreground">
             {currentVideo?.description || "Video description"}
           </p>
-          
-          {/* Display cover image if available and not playing video */}
-          {coverImageUrl && !isPlaying && (
-            <div className="mt-4">
-              <img
-                src={coverImageUrl}
-                alt={currentVideo?.title || "Video cover"}
-                className="w-full max-w-md rounded-lg mx-auto shadow-lg"
-                onError={(e) => {
-                  console.log("Failed to load cover image from Drive:", coverImageUrl);
-                  setCoverImageError(true);
-                  e.currentTarget.src = youtubeThumbnailUrl || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
-                }}
-              />
-            </div>
-          )}
-          
-          {/* Show YouTube thumbnail as default if no cover image provided or if cover image failed to load */}
-          {needsYouTubeThumbnail && youtubeThumbnailUrl && !isPlaying && (
-            <div className="mt-4">
-              <img
-                src={youtubeThumbnailUrl}
-                alt={currentVideo?.title || "YouTube thumbnail"}
-                className="w-full max-w-md rounded-lg mx-auto shadow-lg"
-                onError={(e) => {
-                  console.log("Failed to load YouTube thumbnail");
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
     </div>
-  );
-};
+  

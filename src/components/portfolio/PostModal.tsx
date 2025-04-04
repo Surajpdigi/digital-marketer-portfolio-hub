@@ -43,6 +43,22 @@ const processGoogleDriveUrl = (url: string): string => {
     }
   }
   
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
+  
+  // Handle direct sharing links
+  if (url.includes('drive.google.com/file/d/')) {
+    const shareIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (shareIdMatch && shareIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${shareIdMatch[1]}`;
+    }
+  }
+  
   return url;
 };
 
@@ -89,12 +105,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-lg flex flex-col items-center shadow-lg overflow-hidden"
-        style={{
-          width: "90vw",
-          maxWidth: "800px",
-          maxHeight: "90vh",
-        }}
+        className="relative bg-white rounded-lg flex flex-col items-center shadow-lg overflow-hidden max-h-[90vh] w-[90vw] max-w-3xl"
       >
         {/* Close Button */}
         <Button
@@ -108,17 +119,16 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
 
         {/* Image Container with proper aspect ratio handling */}
         <div 
-          className={`w-full flex justify-center bg-gray-100 ${isPortrait ? 'max-h-[400px]' : ''}`}
+          className="w-full flex justify-center bg-gray-100 overflow-hidden"
           style={{ 
-            maxHeight: isPortrait ? '400px' : 'auto',
-            overflow: 'hidden'
+            maxHeight: '60vh'
           }}
         >
           {processedImageUrl && (
             <img
               src={imageError ? "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" : processedImageUrl}
               alt={currentPost?.title || "Post"}
-              className={`w-auto ${isPortrait ? 'h-full' : 'max-h-[400px]'} object-contain`}
+              className="w-auto h-auto max-w-full max-h-[60vh] object-contain"
               onLoad={handleImageLoad}
               onError={() => {
                 console.log("Failed to load post image:", processedImageUrl);
@@ -129,14 +139,14 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </div>
 
         {/* Text Content */}
-        <div className="p-4 bg-white w-full">
+        <div className="p-4 bg-white w-full overflow-auto">
           <h3 className="text-lg font-bold">{currentPost?.title || "Post Title"}</h3>
 
-          {/* Description with Scrollable Area if it exceeds 2 lines */}
+          {/* Description with Scrollable Area if it exceeds available space */}
           <div
             className="text-gray-600 overflow-y-auto mt-2"
             style={{
-              maxHeight: "6em", // Allow more space for description
+              maxHeight: "20vh",
               lineHeight: "1.5em",
               paddingRight: "0.5rem", // Prevents text from touching scrollbar
             }}
@@ -146,5 +156,4 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
         </div>
       </div>
     </div>
-  );
-};
+  
