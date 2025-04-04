@@ -10,27 +10,54 @@ type PostModalProps = {
   postProjects: PostProject[];
 };
 
+// Comprehensive Google Drive link processor
+const processGoogleDriveUrl = (url: string): string => {
+  if (!url) return '';
+  
+  // Already in the correct format
+  if (url.includes('drive.google.com/uc?')) {
+    return url;
+  }
+  
+  // File ID format: /d/FILE_ID/
+  if (url.includes('drive.google.com/file/d/')) {
+    const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+  }
+  
+  // Alternate format with open?id=
+  if (url.includes('open?id=')) {
+    const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle view links
+  if (url.includes('/view')) {
+    const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  return url;
+};
+
 export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
   const currentPost = postProjects.find((p) => p.id === postId);
 
-  // Improved function to process Google Drive image URLs
-  const processImageUrl = (url: string) => {
-    if (!url) return "";
-    
-    // Check if it's already in the correct format
-    if (url.includes('drive.google.com/uc?')) {
-      return url;
-    }
-    
-    // Match different Google Drive link formats
-    const match = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
-    return match ? `https://drive.google.com/uc?export=view&id=${match[1]}` : url;
-  };
-
-  const imageUrl = currentPost?.image ? processImageUrl(currentPost.image) : "";
+  const rawImageUrl = currentPost?.image || '';
+  const processedImageUrl = processGoogleDriveUrl(rawImageUrl);
+  
+  console.log("Post image URL:", rawImageUrl);
+  console.log("Processed URL:", processedImageUrl);
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget;
@@ -51,6 +78,12 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
+
+  // Reset error state when post changes
+  useEffect(() => {
+    setImageError(false);
+    setImageLoaded(false);
+  }, [postId]);
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
@@ -81,12 +114,16 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
             overflow: 'hidden'
           }}
         >
-          {imageUrl && (
+          {processedImageUrl && (
             <img
-              src={imageUrl}
+              src={imageError ? "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" : processedImageUrl}
               alt={currentPost?.title || "Post"}
               className={`w-auto ${isPortrait ? 'h-full' : 'max-h-[400px]'} object-contain`}
               onLoad={handleImageLoad}
+              onError={() => {
+                console.log("Failed to load post image:", processedImageUrl);
+                setImageError(true);
+              }}
             />
           )}
         </div>

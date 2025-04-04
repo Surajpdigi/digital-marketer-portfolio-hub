@@ -18,9 +18,45 @@ const VideoForm = () => {
 
   const extractVideoId = (url: string): string | null => {
     // Extract YouTube video ID from different URL formats
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  // Process Google Drive URLs to the correct format
+  const processGoogleDriveUrl = (url: string): string => {
+    if (!url) return '';
+    
+    // Already in the correct format
+    if (url.includes('drive.google.com/uc?')) {
+      return url;
+    }
+    
+    // File ID format: /d/FILE_ID/
+    if (url.includes('drive.google.com/file/d/')) {
+      const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+      if (fileIdMatch && fileIdMatch[1]) {
+        return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+      }
+    }
+    
+    // Alternate format with open?id=
+    if (url.includes('open?id=')) {
+      const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+      if (idMatch && idMatch[1]) {
+        return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+      }
+    }
+    
+    // Handle view links
+    if (url.includes('/view')) {
+      const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+      if (idMatch && idMatch[1]) {
+        return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+      }
+    }
+    
+    return url;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,8 +83,16 @@ const VideoForm = () => {
       return;
     }
 
-    // If no thumbnail is provided, generate one from the YouTube video ID
-    const finalThumbnail = thumbnail || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    // Process thumbnail URL if provided, otherwise use YouTube thumbnail
+    let finalThumbnail = '';
+    if (thumbnail) {
+      finalThumbnail = processGoogleDriveUrl(thumbnail);
+    } else {
+      finalThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+
+    // Process cover image URL if provided
+    const processedCoverImage = imageUrl ? processGoogleDriveUrl(imageUrl) : undefined;
 
     const newVideo: VideoContent = {
       id: videoId,
@@ -57,7 +101,7 @@ const VideoForm = () => {
       url,
       thumbnail: finalThumbnail,
       isShort,
-      imageUrl: imageUrl || undefined
+      imageUrl: processedCoverImage
     };
 
     addVideo(newVideo);

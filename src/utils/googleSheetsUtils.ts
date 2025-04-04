@@ -6,29 +6,37 @@ const BLOG_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtz
 
 import { VideoContent, PostContent, BlogPostContent } from "@/context/ContentContext";
 
-// Helper function to process Google Drive image URLs
+// Enhanced Google Drive URL processor
 function processGoogleDriveUrl(url: string): string {
   if (!url) return url;
   
-  // Check if it's already in the correct format
+  // Already in the correct format
   if (url.includes('drive.google.com/uc?')) {
     return url;
   }
   
-  // Check if it's a Google Drive link that needs conversion
+  // File ID format: /d/FILE_ID/
   if (url.includes('drive.google.com/file/d/')) {
-    // Extract file ID and convert to direct image URL
-    const fileIdMatch = url.match(/\/d\/(.+?)\/|\/d\/(.+?)$/);
-    if (fileIdMatch) {
-      const fileId = fileIdMatch[1] || fileIdMatch[2];
-      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
     }
   }
   
-  // Match different Google Drive link formats (e.g., shareable links)
-  const idMatch = url.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
-  if (idMatch && idMatch[1]) {
-    return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+  // Alternate format with open?id=
+  if (url.includes('open?id=')) {
+    const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle view links
+  if (url.includes('/view')) {
+    const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
   }
   
   return url;
@@ -43,6 +51,7 @@ function extractYouTubeId(url: string): string | null {
     return url;
   }
   
+  // Handle various YouTube formats
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
   const match = url.match(regExp);
   return (match && match[2].length === 11) ? match[2] : null;

@@ -24,7 +24,7 @@ const extractYouTubeId = (url: string): string => {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
   const match = url.match(regExp);
 
-  return (match && match[2].length === 11) ? match[2] : url;
+  return (match && match[2].length === 11) ? match[2] : '';
 };
 
 // Helper to get YouTube thumbnail
@@ -32,56 +32,70 @@ const getYouTubeThumbnail = (videoId: string): string => {
   return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 };
 
-export const getImageSource = (project: Project): string => {
-  let imageUrl = '';
+// More reliable Google Drive link conversion
+const processGoogleDriveUrl = (url: string): string => {
+  if (!url) return '';
   
-  if (project.category === "video") {
+  // Already in the correct format
+  if (url.includes('drive.google.com/uc?')) {
+    return url;
+  }
+  
+  // File ID format: /d/FILE_ID/
+  if (url.includes('drive.google.com/file/d/')) {
+    const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
+  }
+  
+  // Alternate format with open?id=
+  if (url.includes('open?id=')) {
+    const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle view links
+  if (url.includes('/view')) {
+    const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  return url;
+};
+
+export const getImageSource = (project: Project): string => {
+  if (isVideoProject(project)) {
     const videoProject = project as VideoProject;
     
-    // First try to use the thumbnail
-    if (videoProject.thumbnail) {
-      imageUrl = videoProject.thumbnail;
+    // First try to use the thumbnail if available
+    if (videoProject.thumbnail && videoProject.thumbnail.trim() !== '') {
+      return processGoogleDriveUrl(videoProject.thumbnail);
     } 
-    // If no thumbnail, try to generate one from YouTube URL
-    else if (videoProject.url) {
+    
+    // If no thumbnail or it's empty, generate one from YouTube URL
+    if (videoProject.url) {
       const youtubeId = extractYouTubeId(videoProject.url);
-      return getYouTubeThumbnail(youtubeId);
-    }
-  } else {
-    imageUrl = (project as PostProject).image || '';
-  }
-
-  // Process Google Drive links
-  if (imageUrl && imageUrl.includes('drive.google.com')) {
-    // Check if it's already in the correct format
-    if (imageUrl.includes('drive.google.com/uc?')) {
-      return imageUrl;
-    }
-    
-    // Match different Google Drive link formats
-    const match = imageUrl.match(/(?:\/d\/|id=|open\?id=)([^\/\?&]+)/);
-    if (match) {
-      return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-    }
-    
-    // Handle sharing URLs format
-    if (imageUrl.includes('drive.google.com/file/d/')) {
-      const parts = imageUrl.split('/');
-      const fileIdIndex = parts.indexOf('d') + 1;
-      if (fileIdIndex > 0 && fileIdIndex < parts.length) {
-        return `https://drive.google.com/uc?export=view&id=${parts[fileIdIndex]}`;
+      if (youtubeId) {
+        return getYouTubeThumbnail(youtubeId);
       }
     }
+    
+    // Fallback image for videos
+    return "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+  } else {
+    // For post projects
+    const imageUrl = (project as PostProject).image || '';
+    if (!imageUrl) {
+      return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
+    }
+    
+    return processGoogleDriveUrl(imageUrl);
   }
-  
-  // Check if the URL is from placeholder service or doesn't exist
-  if (imageUrl.includes('via.placeholder.com') || !imageUrl) {
-    return isVideoProject(project) 
-      ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" 
-      : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
-  }
-  
-  return imageUrl;
 };
 
 export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
@@ -91,13 +105,9 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
     ? "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
     : "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
   
-  // For video projects, try to get YouTube thumbnail if available
+  // Get the image source with proper fallbacks
   let imageSource = getImageSource(project);
-  if (isVideoProject(project) && (project as VideoProject).url && (!imageSource || imageError)) {
-    const youtubeId = extractYouTubeId((project as VideoProject).url || '');
-    imageSource = getYouTubeThumbnail(youtubeId);
-  }
-    
+
   return (
     <div 
       className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md"
