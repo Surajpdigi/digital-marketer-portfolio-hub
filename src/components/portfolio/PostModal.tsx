@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -9,21 +10,55 @@ type PostModalProps = {
   postProjects: PostProject[];
 };
 
-// Function to extract Google Drive Image Direct Link
+// Comprehensive Google Drive link processor
 const processGoogleDriveUrl = (url: string): string => {
-  if (!url) return "";
-
-  // Already in correct format
-  if (url.includes("drive.google.com/uc?")) {
+  if (!url) return '';
+  
+  // Already in the correct format
+  if (url.includes('drive.google.com/uc?')) {
     return url;
   }
-
-  // Extract Google Drive File ID
-  const match = url.match(/(?:\/d\/|id=)([^\/?&]+)/);
-  if (match && match[1]) {
-    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  
+  // File ID format: /d/FILE_ID/
+  if (url.includes('drive.google.com/file/d/')) {
+    const fileIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    }
   }
-
+  
+  // Alternate format with open?id=
+  if (url.includes('open?id=')) {
+    const idMatch = url.match(/open\?id=([^\/\?&]+)/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle view links
+  if (url.includes('/view')) {
+    const idMatch = url.match(/\/d\/([^\/\?&]+)\/view/);
+    if (idMatch && idMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+    }
+  }
+  
+  // Handle Google Drive sharing links (new format)
+  if (url.includes('drive.google.com/drive/folders/')) {
+    const folderIdMatch = url.match(/folders\/([^\/\?&]+)/);
+    if (folderIdMatch && folderIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${folderIdMatch[1]}`;
+    }
+  }
+  
+  // Handle direct sharing links
+  if (url.includes('drive.google.com/file/d/')) {
+    const shareIdMatch = url.match(/\/d\/([^\/\?&]+)/);
+    if (shareIdMatch && shareIdMatch[1]) {
+      return `https://drive.google.com/uc?export=view&id=${shareIdMatch[1]}`;
+    }
+  }
+  
   return url;
 };
 
@@ -32,17 +67,17 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
-
   const currentPost = postProjects.find((p) => p.id === postId);
-  const rawImageUrl = currentPost?.image || "";
-  const processedImageUrl = processGoogleDriveUrl(rawImageUrl);
 
+  const rawImageUrl = currentPost?.image || '';
+  const processedImageUrl = processGoogleDriveUrl(rawImageUrl);
+  
   console.log("Post image URL:", rawImageUrl);
   console.log("Processed URL:", processedImageUrl);
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget;
-    // Determine if image is portrait
+    // Check if image is portrait (height > width)
     setIsPortrait(img.naturalHeight > img.naturalWidth);
     setImageLoaded(true);
   };
@@ -60,6 +95,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     };
   }, [onClose]);
 
+  // Reset error state when post changes
   useEffect(() => {
     setImageError(false);
     setImageLoaded(false);
@@ -81,28 +117,39 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           <X className="h-5 w-5" />
         </Button>
 
-        {/* Image Section */}
-        <div className="w-full flex justify-center bg-gray-100 overflow-hidden" style={{ maxHeight: "60vh" }}>
+        {/* Image Container with proper aspect ratio handling */}
+        <div 
+          className="w-full flex justify-center bg-gray-100 overflow-hidden"
+          style={{ 
+            maxHeight: '60vh'
+          }}
+        >
           {processedImageUrl && (
             <img
-              src={imageError ? "https://via.placeholder.com/800x600?text=Image+Not+Available" : processedImageUrl}
+              src={imageError ? "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60" : processedImageUrl}
               alt={currentPost?.title || "Post"}
               className="w-auto h-auto max-w-full max-h-[60vh] object-contain"
               onLoad={handleImageLoad}
               onError={() => {
-                console.error("Failed to load image:", processedImageUrl);
+                console.log("Failed to load post image:", processedImageUrl);
                 setImageError(true);
               }}
             />
           )}
         </div>
 
-        {/* Post Details */}
+        {/* Text Content */}
         <div className="p-4 bg-white w-full overflow-auto">
           <h3 className="text-lg font-bold">{currentPost?.title || "Post Title"}</h3>
+
+          {/* Description with Scrollable Area if it exceeds available space */}
           <div
             className="text-gray-600 overflow-y-auto mt-2"
-            style={{ maxHeight: "20vh", lineHeight: "1.5em", paddingRight: "0.5rem" }}
+            style={{
+              maxHeight: "20vh",
+              lineHeight: "1.5em",
+              paddingRight: "0.5rem", // Prevents text from touching scrollbar
+            }}
           >
             {currentPost?.description || "Post description"}
           </div>
