@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Play } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { VideoProject } from "./ProjectTypes";
 
 type VideoModalProps = {
@@ -120,7 +121,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
       <div 
         ref={modalRef} 
-        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'} max-h-[90vh]`}
+        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'} max-h-[90vh] flex flex-col`}
       >
         <Button 
           variant="ghost" 
@@ -130,6 +131,8 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
         >
           <X className="h-5 w-5" />
         </Button>
+        
+        {/* Video section with fixed aspect ratio */}
         <div className={isShort ? 'aspect-[9/16] w-full relative' : 'aspect-video w-full relative'}>
           {isPlaying ? (
             <iframe 
@@ -159,13 +162,19 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
             </div>
           )}
         </div>
-        <div className="p-4 bg-white max-h-[30vh] overflow-y-auto">
-          <h3 className="text-xl font-bold mb-2">
-            {currentVideo?.title || "Marketing Video"}
-          </h3>
-          <p className="text-muted-foreground">
-            {currentVideo?.description || "Video description"}
-          </p>
+        
+        {/* Text content with ScrollArea for overflow */}
+        <div className="bg-white flex-shrink-0" style={{ maxHeight: "30vh" }}>
+          <ScrollArea className="h-full max-h-[30vh]">
+            <div className="p-4">
+              <h3 className="text-xl font-bold mb-2">
+                {currentVideo?.title || "Marketing Video"}
+              </h3>
+              <p className="text-muted-foreground">
+                {currentVideo?.description || "Video description"}
+              </p>
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>

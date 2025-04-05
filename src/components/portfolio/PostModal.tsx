@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { PostProject } from "./ProjectTypes";
 
 type PostModalProps = {
@@ -105,7 +106,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
       <div
         ref={modalRef}
-        className="relative bg-white rounded-lg flex flex-col items-center shadow-lg overflow-hidden max-h-[90vh] w-[90vw] max-w-3xl"
+        className="relative bg-white rounded-lg flex flex-col shadow-lg overflow-hidden max-h-[90vh] w-[90vw] max-w-3xl"
       >
         {/* Close Button */}
         <Button
@@ -119,7 +120,7 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
 
         {/* Image Container with proper aspect ratio handling */}
         <div 
-          className="w-full flex justify-center bg-gray-100 overflow-hidden"
+          className="w-full flex justify-center bg-gray-100 overflow-hidden flex-shrink-0"
           style={{ 
             maxHeight: '60vh'
           }}
@@ -138,21 +139,16 @@ export const PostModal = ({ postId, onClose, postProjects }: PostModalProps) => 
           )}
         </div>
 
-        {/* Text Content */}
-        <div className="p-4 bg-white w-full overflow-auto">
-          <h3 className="text-lg font-bold">{currentPost?.title || "Post Title"}</h3>
-
-          {/* Description with Scrollable Area if it exceeds available space */}
-          <div
-            className="text-gray-600 overflow-y-auto mt-2"
-            style={{
-              maxHeight: "20vh",
-              lineHeight: "1.5em",
-              paddingRight: "0.5rem", // Prevents text from touching scrollbar
-            }}
-          >
-            {currentPost?.description || "Post description"}
-          </div>
+        {/* Text Content with ScrollArea */}
+        <div className="bg-white flex-shrink-0" style={{ maxHeight: "30vh" }}>
+          <ScrollArea className="h-full max-h-[30vh]">
+            <div className="p-4">
+              <h3 className="text-lg font-bold">{currentPost?.title || "Post Title"}</h3>
+              <div className="text-gray-600 mt-2">
+                {currentPost?.description || "Post description"}
+              </div>
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
