@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FilterButtons } from "./FilterButtons";
 import { ProjectCard, isVideoProject } from "./ProjectCard";
@@ -18,11 +17,9 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
   const [activePost, setActivePost] = useState<number | null>(null);
 
-  // Filter out projects without essential data
   const validVideoProjects = videoProjects.filter(video => 
     video.title && video.description && video.thumbnail);
   
-  // Remove duplicates from videos by unique ID
   const uniqueVideoProjects = validVideoProjects.reduce((acc: VideoProject[], current) => {
     const existingIndex = acc.findIndex(v => v.id === current.id);
     if (existingIndex === -1) {
@@ -78,7 +75,7 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProjects.map((project) => (
             <ProjectCard 
               key={`${project.category}-${project.id}`} 

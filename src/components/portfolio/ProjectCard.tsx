@@ -75,10 +75,10 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
 
   return (
     <div 
-      className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md"
+      className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md aspect-[4/5]" // Changed aspect ratio to be more squarish
       onClick={onClick}
     >
-      <div className="aspect-video">
+      <div className="h-full w-full">
         <img 
           src={imageError ? fallbackImage : imageSource}
           alt={project.title}
@@ -109,7 +109,7 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
           </div>
         )}
       </div>
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-6">
+      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
         <h3 className="text-xl font-bold mb-2 text-center">{project.title}</h3>
         <p className="text-center text-sm line-clamp-3 overflow-hidden">{project.description}</p>
       </div>
