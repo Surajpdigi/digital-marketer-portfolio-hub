@@ -2,33 +2,10 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronRight, Target, Globe, BarChart, Award } from "lucide-react";
+import { ArrowRight, ChevronRight, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { skills } from "@/components/portfolio/AboutSection";
-
-const services = [
-  {
-    title: "Digital Strategy",
-    description: "Crafting comprehensive digital marketing strategies that align with your business objectives",
-    icon: Target,
-  },
-  {
-    title: "Social Media",
-    description: "Creating engaging content and managing social platforms to build your brand's community",
-    icon: Globe,
-  },
-  {
-    title: "Analytics",
-    description: "Providing data-driven insights to track performance and guide decision-making",
-    icon: BarChart,
-  },
-  {
-    title: "Brand Growth",
-    description: "Developing strategic approaches for brand positioning and market expansion",
-    icon: Award,
-  },
-];
 
 // Simple stats to showcase experience and expertise
 const stats = [
@@ -43,52 +20,57 @@ export const PortfolioPreview = () => {
     <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 reveal">
-          <h2 className="text-3xl font-bold mb-4">What I Do</h2>
+          <h2 className="text-3xl font-bold mb-4">My Portfolio</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Transforming brands with creative strategies and impactful digital solutions
+            A showcase of my creative work and digital marketing accomplishments
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 reveal">
-          {/* Left side - Services */}
+          {/* Left side - About Me & Stats */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-semibold mb-6">My Services</h3>
+            <h3 className="text-2xl font-semibold mb-6">About My Work</h3>
             
-            {/* New stats section */}
-            <div className="mb-8 bg-muted/30 p-5 rounded-lg">
+            {/* Stats section */}
+            <div className="mb-8 bg-muted/30 p-6 rounded-lg">
               <p className="text-muted-foreground mb-4">
                 As a seasoned digital marketing specialist, I've helped dozens of brands achieve
                 their goals through strategic content and innovative campaigns. My expertise spans 
                 across multiple platforms and techniques, with a proven track record of success.
               </p>
               
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-2 gap-6 mt-6">
                 {stats.map((stat) => (
-                  <div key={stat.label} className="text-center">
-                    <div className="text-xl font-bold text-primary">{stat.value}</div>
+                  <div key={stat.label} className="text-center p-3 bg-background/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">{stat.label}</div>
                   </div>
                 ))}
               </div>
             </div>
             
-            <div className="space-y-5">
-              {services.map((service) => (
-                <div key={service.title} className="flex items-start gap-4 group">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1 transition-all duration-300 group-hover:bg-primary/20">
-                    <service.icon className="h-6 w-6 text-primary" />
+            {/* Skills & Expertise */}
+            <div className="bg-muted/30 p-6 rounded-lg">
+              <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Areas of Expertise
+              </h4>
+              <p className="text-muted-foreground text-sm mb-4">
+                My work spans across several disciplines in digital marketing, from content creation 
+                to audience engagement and analytics-driven strategy.
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {skills.slice(0, 6).map((skill) => (
+                  <div key={skill.name} className="text-sm py-1">
+                    <span className="font-medium">{skill.name}</span>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-lg group-hover:text-primary transition-colors">{service.title}</h4>
-                    <p className="text-muted-foreground text-sm">{service.description}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
             
             <div className="pt-4">
               <Link to="/portfolio" className="text-primary font-medium flex items-center gap-1 hover:gap-2 transition-all duration-300">
-                See how I implement these services
+                View my full portfolio
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
