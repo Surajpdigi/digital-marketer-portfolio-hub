@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight, Target, Globe, BarChart, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { skills } from "@/components/portfolio/AboutSection";
 
 const services = [
   {
@@ -29,6 +30,14 @@ const services = [
   },
 ];
 
+// Simple stats to showcase experience and expertise
+const stats = [
+  { label: "Projects Completed", value: "75+" },
+  { label: "Client Satisfaction", value: "98%" },
+  { label: "Years Experience", value: "5+" },
+  { label: "Awards Won", value: "12" },
+];
+
 export const PortfolioPreview = () => {
   return (
     <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
@@ -44,6 +53,24 @@ export const PortfolioPreview = () => {
           {/* Left side - Services */}
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold mb-6">My Services</h3>
+            
+            {/* New stats section */}
+            <div className="mb-8 bg-muted/30 p-5 rounded-lg">
+              <p className="text-muted-foreground mb-4">
+                As a seasoned digital marketing specialist, I've helped dozens of brands achieve
+                their goals through strategic content and innovative campaigns. My expertise spans 
+                across multiple platforms and techniques, with a proven track record of success.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <div className="text-xl font-bold text-primary">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
             
             <div className="space-y-5">
               {services.map((service) => (
