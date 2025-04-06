@@ -1,14 +1,13 @@
 
 import React from 'react';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { ContentProvider } from '@/context/ContentContext';
+import { useAuth } from '@/context/AuthContext';
 import LoginForm from '@/components/dashboard/LoginForm';
 import DashboardNav from '@/components/dashboard/DashboardNav';
 import VideoForm from '@/components/dashboard/VideoForm';
 import PostForm from '@/components/dashboard/PostForm';
 import ContentList from '@/components/dashboard/ContentList';
 
-const DashboardContent = () => {
+const Dashboard = () => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
@@ -35,16 +34,6 @@ const DashboardContent = () => {
         <ContentList />
       </main>
     </div>
-  );
-};
-
-const Dashboard = () => {
-  return (
-    <AuthProvider>
-      <ContentProvider>
-        <DashboardContent />
-      </ContentProvider>
-    </AuthProvider>
   );
 };
 
