@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,16 +7,21 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { skills } from "@/components/portfolio/AboutSection";
 
 // Simple stats to showcase experience and expertise
-const stats = [
-  { label: "Projects Completed", value: "75+" },
-  { label: "Client Satisfaction", value: "98%" },
-  { label: "Years Experience", value: "5+" },
-  { label: "Awards Won", value: "12" },
-];
-
+const stats = [{
+  label: "Projects Completed",
+  value: "75+"
+}, {
+  label: "Client Satisfaction",
+  value: "98%"
+}, {
+  label: "Years Experience",
+  value: "5+"
+}, {
+  label: "Awards Won",
+  value: "12"
+}];
 export const PortfolioPreview = () => {
-  return (
-    <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
+  return <section id="portfolio" className="py-20 px-4 bg-gradient-to-b from-background via-muted/20 to-background">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 reveal">
           <h2 className="text-3xl font-bold mb-4">My Portfolio</h2>
@@ -29,7 +33,7 @@ export const PortfolioPreview = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 reveal">
           {/* Left side - About Me & Stats */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-semibold mb-6">About My Work</h3>
+            
             
             {/* Stats section */}
             <div className="mb-8 bg-muted/30 p-6 rounded-lg">
@@ -39,14 +43,7 @@ export const PortfolioPreview = () => {
                 across multiple platforms and techniques, with a proven track record of success.
               </p>
               
-              <div className="grid grid-cols-2 gap-6 mt-6">
-                {stats.map((stat) => (
-                  <div key={stat.label} className="text-center p-3 bg-background/50 rounded-lg">
-                    <div className="text-2xl font-bold text-primary">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
+              
             </div>
             
             {/* Skills & Expertise */}
@@ -60,11 +57,9 @@ export const PortfolioPreview = () => {
                 to audience engagement and analytics-driven strategy.
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {skills.slice(0, 6).map((skill) => (
-                  <div key={skill.name} className="text-sm py-1">
+                {skills.slice(0, 6).map(skill => <div key={skill.name} className="text-sm py-1">
                     <span className="font-medium">{skill.name}</span>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
             
@@ -78,18 +73,14 @@ export const PortfolioPreview = () => {
           
           {/* Right side - Creative Project Display */}
           <div>
-            <h3 className="text-2xl font-semibold mb-6">Featured Projects</h3>
+            
             
             <div className="relative grid grid-cols-6 grid-rows-6 gap-3 h-[500px]">
               {/* Large featured project */}
               <Card className="col-span-4 row-span-6 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                 <div className="h-full relative">
-                  <AspectRatio ratio={4/5} className="h-full">
-                    <img 
-                      src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-                      alt="Brand Awareness Campaign" 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                  <AspectRatio ratio={4 / 5} className="h-full">
+                    <img src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Brand Awareness Campaign" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   </AspectRatio>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 p-4 text-white">
@@ -103,11 +94,7 @@ export const PortfolioPreview = () => {
               {/* Top right project */}
               <Card className="col-span-2 row-span-3 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                 <div className="h-full relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-                    alt="Content Strategy" 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Content Strategy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 p-3 text-white">
                       <h3 className="font-bold text-sm">Content Strategy</h3>
@@ -119,11 +106,7 @@ export const PortfolioPreview = () => {
               {/* Bottom right project */}
               <Card className="col-span-2 row-span-3 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                 <div className="h-full relative">
-                  <img 
-                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-                    alt="Video Marketing" 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Video Marketing" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 p-3 text-white">
                       <h3 className="font-bold text-sm">Video Marketing</h3>
@@ -144,6 +127,5 @@ export const PortfolioPreview = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
