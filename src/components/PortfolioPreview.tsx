@@ -29,8 +29,7 @@ export const PortfolioPreview = () => {
   const { posts, videos, isLoading } = useContent();
   
   // Convert to project types for consistency with portfolio page
-  // Show up to 2 posts in the portfolio preview
-  const postProjects: PostProject[] = posts.slice(0, 2).map(post => ({
+  const postProjects: PostProject[] = posts.slice(0, 1).map(post => ({
     id: post.id,
     title: post.title,
     description: post.description,
@@ -63,7 +62,7 @@ export const PortfolioPreview = () => {
           <div className="space-y-6">
             
             {/* Stats section */}
-            <div className="mb-8 bg-muted/30 p-6 rounded-lg shadow-sm">
+            <div className="mb-8 bg-muted/30 p-6 rounded-lg">
               <p className="text-muted-foreground mb-4">
                 As a seasoned digital marketing specialist, I've helped dozens of brands achieve
                 their goals through strategic content and innovative campaigns. My expertise spans 
@@ -72,7 +71,7 @@ export const PortfolioPreview = () => {
               
               <div className="grid grid-cols-2 gap-4 mt-6">
                 {stats.map((stat, index) => (
-                  <div key={index} className="text-center p-3 bg-background/50 rounded-lg hover:shadow-md transition-all duration-300">
+                  <div key={index} className="text-center p-3 bg-background/50 rounded-lg">
                     <div className="text-primary font-bold text-xl">{stat.value}</div>
                     <div className="text-xs text-muted-foreground">{stat.label}</div>
                   </div>
@@ -81,7 +80,7 @@ export const PortfolioPreview = () => {
             </div>
             
             {/* Skills & Expertise */}
-            <div className="bg-muted/30 p-6 rounded-lg shadow-sm">
+            <div className="bg-muted/30 p-6 rounded-lg">
               <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
                 <Award className="h-5 w-5 text-primary" />
                 Areas of Expertise
@@ -113,10 +112,10 @@ export const PortfolioPreview = () => {
                 <p className="mt-4 text-muted-foreground">Loading projects...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-6 grid-rows-6 gap-3 h-[500px]">
-                {/* Main Post Project - Adjust visibility based on available posts */}
+              <div className="relative grid grid-cols-6 grid-rows-6 gap-3 h-[500px]">
+                {/* Featured post project - larger display */}
                 {postProjects.length > 0 ? (
-                  <Card className={`${postProjects.length > 1 ? 'col-span-3' : 'col-span-4'} row-span-6 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                  <Card className="col-span-4 row-span-6 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                     <div className="h-full relative">
                       <AspectRatio ratio={4 / 5} className="h-full">
                         <img 
@@ -152,30 +151,9 @@ export const PortfolioPreview = () => {
                   </Card>
                 )}
                 
-                {/* Second Post Project (if available) */}
-                {postProjects.length > 1 && (
-                  <Card className="col-span-3 row-span-3 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-                    <div className="h-full relative">
-                      <img 
-                        src={getImageSource(postProjects[1])} 
-                        alt={postProjects[1].title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300">
-                        <div className="absolute bottom-0 left-0 p-3 text-white">
-                          <h3 className="font-bold text-sm">{postProjects[1].title}</h3>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-                
                 {/* Top Video Project */}
                 {videoProjects.length > 0 ? (
-                  <Card className={`${postProjects.length > 1 ? 'col-span-3' : 'col-span-2'} ${postProjects.length > 1 ? 'row-span-3' : 'row-span-3'} overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                  <Card className="col-span-2 row-span-3 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                     <div className="h-full relative">
                       <img 
                         src={getImageSource(videoProjects[0])} 
@@ -207,7 +185,7 @@ export const PortfolioPreview = () => {
                 
                 {/* Bottom Video Project */}
                 {videoProjects.length > 1 ? (
-                  <Card className={`${postProjects.length > 1 ? 'col-span-3' : 'col-span-2'} ${postProjects.length > 1 ? 'row-span-3' : 'row-span-3'} overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                  <Card className="col-span-2 row-span-3 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
                     <div className="h-full relative">
                       <img 
                         src={getImageSource(videoProjects[1])} 
