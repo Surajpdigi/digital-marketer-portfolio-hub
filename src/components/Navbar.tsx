@@ -81,32 +81,32 @@ export const Navbar = () => {
           <div className="md:hidden py-4 flex flex-col space-y-4 animate-fade-in">
             <button 
               onClick={() => scrollToSection('hero')} 
-              className="py-2 hover:text-primary transition-colors"
+              className="py-2 hover:text-primary transition-colors text-center"
             >
               Home
             </button>
             <button 
               onClick={() => scrollToSection('services')} 
-              className="py-2 hover:text-primary transition-colors"
+              className="py-2 hover:text-primary transition-colors text-center"
             >
               Services
             </button>
             <button 
               onClick={() => scrollToSection('blog')} 
-              className="py-2 hover:text-primary transition-colors"
+              className="py-2 hover:text-primary transition-colors text-center"
             >
               Blog
             </button>
             <Link 
               to="/portfolio" 
-              className="py-2 hover:text-primary transition-colors"
+              className="py-2 hover:text-primary transition-colors text-center"
               onClick={() => setIsMenuOpen(false)}
             >
               Portfolio
             </Link>
             <button 
               onClick={() => scrollToSection('contact')} 
-              className="py-2 hover:text-primary transition-colors"
+              className="py-2 hover:text-primary transition-colors text-center"
             >
               Contact
             </button>
