@@ -27,25 +27,26 @@ const services = [
 
 export const Services = () => {
   return (
-    <section id="services" className="py-20 px-4 bg-gradient-to-b from-muted/30 to-background">
-      <div className="max-w-6xl mx-auto reveal">
+    <section id="services" className="py-20 px-4 bg-gradient-to-br from-blue-600 to-blue-400 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDIwIDAgTCAwIDAgMCAyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+      <div className="max-w-6xl mx-auto reveal relative">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Services</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-white">Services</h2>
+          <p className="text-blue-50 max-w-2xl mx-auto">
             Specialized digital marketing services to help your business thrive in the digital landscape
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service) => (
-            <Card key={service.title} className="border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:translate-y-[-5px]">
+            <Card key={service.title} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-colors duration-300 group">
               <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <service.icon className="h-6 w-6 text-primary" />
+                <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center mb-4 group-hover:bg-white/20 transition-colors">
+                  <service.icon className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle>{service.title}</CardTitle>
+                <CardTitle className="text-white">{service.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-sm md:text-base">{service.description}</CardDescription>
+                <CardDescription className="text-sm md:text-base text-blue-50">{service.description}</CardDescription>
               </CardContent>
             </Card>
           ))}
