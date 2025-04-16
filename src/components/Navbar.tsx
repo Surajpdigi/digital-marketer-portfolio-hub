@@ -1,14 +1,15 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
-    if (!window.location.pathname.startsWith('/#')) {
+    if (location.pathname !== '/') {
       window.location.href = `/#${sectionId}`;
       return;
     }

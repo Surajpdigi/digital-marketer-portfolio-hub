@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -12,8 +11,8 @@ export const Hero = () => {
   return (
     <section id="hero" className="min-h-[calc(100vh-5rem)] relative px-4 py-16 md:py-0 bg-white">
       {/* Background Image with Overlay */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81')] bg-cover bg-center bg-no-repeat">
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 to-white/75" />
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1460925895917-afdab827c52f')] bg-cover bg-center bg-no-repeat">
+        <div className="absolute inset-0 bg-gradient-to-r from-white/90 to-white/75" />
       </div>
 
       <div className="relative flex items-center min-h-[calc(100vh-5rem)]">
