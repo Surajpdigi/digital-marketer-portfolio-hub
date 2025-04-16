@@ -10,7 +10,7 @@ export const Navbar = () => {
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
     if (location.pathname !== '/') {
-      window.location.href = `/#${sectionId}`;
+      window.location.href = `/${sectionId === 'hero' ? '' : '#' + sectionId}`;
       return;
     }
     
