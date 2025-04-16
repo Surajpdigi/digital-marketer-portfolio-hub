@@ -29,64 +29,34 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "hsl(221.2, 83.2%, 53.3%)", // Bright blue
+          foreground: "hsl(210, 40%, 98%)", // Light white-blue
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "hsl(209, 68%, 95%)", // Very light blue
+          foreground: "hsl(221.2, 47.4%, 11.2%)",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "hsl(210, 40%, 96.1%)", // Soft blue-white
+          foreground: "hsl(215.4, 16.3%, 46.9%)",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "hsl(210, 40%, 96.1%)",
+          foreground: "hsl(222.2, 47.4%, 11.2%)",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "hsl(0, 0%, 100%)", // Pure white
+          foreground: "hsl(222.2, 84%, 4.9%)",
         },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      backgroundImage: {
+        'gradient-blue-white': 'linear-gradient(to top, #accbee 0%, #e7f0fd 100%)',
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          from: { opacity: "0", transform: "translateY(10px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-out": {
-          from: { opacity: "1", transform: "translateY(0)" },
-          to: { opacity: "0", transform: "translateY(10px)" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "fade-out": "fade-out 0.3s ease-out",
+      boxShadow: {
+        'blue-soft': '0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06)',
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
