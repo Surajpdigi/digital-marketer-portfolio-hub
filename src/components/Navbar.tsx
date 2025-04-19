@@ -111,6 +111,14 @@ export const Navbar = () => {
             >
               Contact
             </button>
+
+            <Link 
+              herf="#contact" 
+              className="py-2 hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              contact
+            </Link>
           </div>
         )}
       </div>
