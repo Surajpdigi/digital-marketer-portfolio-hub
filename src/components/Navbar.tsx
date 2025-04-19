@@ -113,11 +113,11 @@ export const Navbar = () => {
             </button>
 
             <Link 
-              herf="#contact" 
+              to="/#contact"
+              onClick={() => scrollToSection('contact')} 
               className="py-2 hover:text-primary transition-colors"
-              onClick={() => setIsMenuOpen(false)}
             >
-              contact
+              Contact
             </Link>
           </div>
         )}
