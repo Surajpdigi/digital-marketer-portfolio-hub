@@ -119,10 +119,12 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
   const youtubeId = currentVideo?.url ? extractYouTubeId(currentVideo.url) : videoId;
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-auto">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-hidden">
       <div 
         ref={modalRef} 
-        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'} max-h-[90vh] flex flex-col`}
+        className={`relative bg-white rounded-lg overflow-hidden max-h-[90vh] flex flex-col ${
+          isShort ? 'max-w-[350px] w-full' : 'max-w-4xl w-full'
+        }`}
       >
         <Button 
           variant="ghost" 
@@ -133,8 +135,11 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
           <X className="h-5 w-5" />
         </Button>
         
-        {/* Video section with fixed aspect ratio */}
-        <div className={isShort ? 'aspect-[9/16] w-full relative' : 'aspect-video w-full relative'}>
+        {/* Video section with contained aspect ratio */}
+        <div 
+          className={`${isShort ? 'aspect-[9/16]' : 'aspect-video'} w-full relative`}
+          style={{maxHeight: isShort ? '70vh' : '60vh'}}
+        >
           {isPlaying ? (
             <iframe 
               src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}
@@ -151,7 +156,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
               <img
                 src={getYouTubeThumbnail(youtubeId)}
                 alt={currentVideo?.title || "YouTube thumbnail"}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-black"
                 onError={(e) => {
                   console.log("Failed to load YouTube thumbnail");
                   e.currentTarget.src = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60";
@@ -165,8 +170,8 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
         </div>
         
         {/* Text content with ScrollArea for overflow */}
-        <div className="bg-white flex-shrink-0" style={{ maxHeight: "30vh" }}>
-          <ScrollArea className="h-full max-h-[30vh]">
+        <div className="bg-white flex-shrink-0 max-h-[30vh]">
+          <ScrollArea className="h-full" style={{maxHeight: "30vh"}}>
             <div className="p-4">
               <h3 className="text-xl font-bold mb-2">
                 {currentVideo?.title || "Marketing Video"}
