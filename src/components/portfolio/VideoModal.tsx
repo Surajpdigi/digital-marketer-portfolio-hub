@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Play } from "lucide-react";
@@ -122,9 +121,10 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 overflow-hidden">
       <div 
         ref={modalRef} 
-        className={`relative bg-white rounded-lg overflow-hidden max-h-[90vh] flex flex-col ${
+        className={`relative bg-white rounded-lg overflow-hidden flex flex-col ${
           isShort ? 'max-w-[350px] w-full' : 'max-w-4xl w-full'
         }`}
+        style={{ maxHeight: '90vh' }}
       >
         <Button 
           variant="ghost" 
@@ -138,7 +138,7 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
         {/* Video section with contained aspect ratio */}
         <div 
           className={`${isShort ? 'aspect-[9/16]' : 'aspect-video'} w-full relative`}
-          style={{maxHeight: isShort ? '70vh' : '60vh'}}
+          style={{maxHeight: isShort ? '65vh' : '55vh'}}
         >
           {isPlaying ? (
             <iframe 
@@ -169,9 +169,9 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
           )}
         </div>
         
-        {/* Text content with ScrollArea for overflow */}
-        <div className="bg-white flex-shrink-0 max-h-[30vh]">
-          <ScrollArea className="h-full" style={{maxHeight: "30vh"}}>
+        {/* Text content with ScrollArea for overflow - explicitly setting a fixed height for the text section */}
+        <div className="bg-white flex-shrink-0" style={{ height: '25vh', maxHeight: '25vh' }}>
+          <ScrollArea className="h-full w-full">
             <div className="p-4">
               <h3 className="text-xl font-bold mb-2">
                 {currentVideo?.title || "Marketing Video"}
