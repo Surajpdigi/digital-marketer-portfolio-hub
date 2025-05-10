@@ -37,12 +37,12 @@ const ContentList = () => {
               <div key={video.id} className="flex items-start gap-4 border-b pb-4">
                 <div className="relative w-20 h-16 overflow-hidden rounded">
                   <img 
-                    src={video.thumbnail || "https://via.placeholder.com/320x180?text=Video+Thumbnail"} 
+                    src={video.thumbnail || "https://youtu.be/h2pyOejlbJA?si=hfbQXtfBEdYsUW3C"} 
                     alt={video.title} 
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "https://via.placeholder.com/320x180?text=Video+Thumbnail";
+                      target.src = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS3J5vtzHVOs3KxTSN2_z6N8aPfRbVrJoKs5_TcKeyMeIVMk_HQS_YJC4mOZljoIsWjnP--PDvC6xH2/pub?gid=0&single=true&output=csv";
                     }}
                   />
                 </div>
